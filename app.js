@@ -65,8 +65,8 @@ const getTour = (req, res) => {
 
   // guard close
   // if id is greater than tours length then id is not existing since by default id is incremental
-  // if (id > tours.length)
-  if (!tour)
+  if (id > tours.length)
+    // if (!tour)
     return res.status(404).json({ status: 'fail', message: 'Invalid ID' });
 
   // find the tour and return
