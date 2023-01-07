@@ -18,7 +18,7 @@ const tours = JSON.parse(
   fs.readFileSync(`${__dirname}/dev-data/data/tours-simple.json`)
 );
 
-app.get('/api/v1/tours', (req, res) => {
+const getAllTours = (req, res) => {
   res.status(200).json({
     status: 'success',
     results: tours.length,
@@ -26,33 +26,9 @@ app.get('/api/v1/tours', (req, res) => {
       tours,
     },
   });
-});
+};
 
-app.get('/api/v1/tours/:id', (req, res) => {
-  // All paramaters defined in the url can be retreive from req.params
-  // console.log(req.params);
-
-  //  Convert string to number
-  const id = req.params.id * 1;
-
-  // guard close
-  // if id is greater than tours length then id is not existing since by default id is incremental
-  // if (id > tours.length)
-  if (!tour)
-    return res.status(404).json({ status: 'fail', message: 'Invalid ID' });
-
-  // find the tour and return
-  const tour = tours.find((el) => el.id === req.params.id);
-  res.status(200).json({
-    status: 'success',
-    results: tours.length,
-    data: {
-      tours,
-    },
-  });
-});
-
-app.post('/api/v1/tours', (req, res) => {
+const createTour = (req, res) => {
   // const newTour = { id: newId, ...req.body };
   // tours = [...tours, newTour];
 
@@ -78,16 +54,33 @@ app.post('/api/v1/tours', (req, res) => {
       });
     }
   );
-});
+};
 
-app.get('/', (req, res) => {
-  // res.status(200).send('Hello from the server side');
-  res
-    .status(200)
-    .json({ message: 'Hello from the server side', app: 'Natours' });
-});
+const getTour = (req, res) => {
+  // All paramaters defined in the url can be retreive from req.params
+  // console.log(req.params);
 
-app.patch('/api/v1/tours/:id', (req, res) => {
+  //  Convert string to number
+  const id = req.params.id * 1;
+
+  // guard close
+  // if id is greater than tours length then id is not existing since by default id is incremental
+  // if (id > tours.length)
+  if (!tour)
+    return res.status(404).json({ status: 'fail', message: 'Invalid ID' });
+
+  // find the tour and return
+  const tour = tours.find((el) => el.id === req.params.id);
+  res.status(200).json({
+    status: 'success',
+    results: tours.length,
+    data: {
+      tours,
+    },
+  });
+};
+
+const updateTour = (req, res) => {
   const id = req.params.id * 1;
   if (id > tours.length)
     return res.status(404).json({ status: 'fail', message: 'Invalid ID' });
@@ -95,14 +88,26 @@ app.patch('/api/v1/tours/:id', (req, res) => {
   res
     .status(200)
     .json({ status: 'succes', data: { tour: '<Updated Tour Here...>' } });
-});
+};
 
-app.delete('/api/v1/tours/:id', (req, res) => {
+const deleteTour = (req, res) => {
   const id = req.params.id * 1;
   if (id > tours.length)
     return res.status(404).json({ status: 'fail', message: 'Invalid ID' });
 
   res.status(204).json({ status: 'succes', data: null });
+};
+
+app.get('/api/v1/tours', getAllTours);
+app.get('/api/v1/tours/:id', getTour);
+app.post('/api/v1/tours', createTour);
+app.patch('/api/v1/tours/:id', updateTour);
+app.delete('/api/v1/tours/:id', deleteTour);
+app.get('/', (req, res) => {
+  // res.status(200).send('Hello from the server side');
+  res
+    .status(200)
+    .json({ message: 'Hello from the server side', app: 'Natours' });
 });
 
 app.listen(port, () => {
