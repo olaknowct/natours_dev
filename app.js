@@ -28,8 +28,31 @@ app.get('/api/v1/tours', (req, res) => {
 });
 
 app.post('/api/v1/tours', (req, res) => {
-  console.log(req.body);
-  res.end('done');
+  // const newTour = { id: newId, ...req.body };
+  // tours = [...tours, newTour];
+
+  // Set new id
+  const newId = tours[tours.length - 1].id + 1;
+
+  // Create new tour
+  const newTour = Object.assign({ id: newId }, req.body);
+
+  // Update Tour variable
+  tours.push(newTour);
+
+  // Persist new file
+  fs.writeFile(
+    `${__dirname}/dev-data/data/tours-simple.json`,
+    JSON.stringify(tours),
+    (err) => {
+      res.status(201).json({
+        status: 'Success',
+        data: {
+          tour: newTour,
+        },
+      });
+    }
+  );
 });
 
 app.get('/', (req, res) => {
