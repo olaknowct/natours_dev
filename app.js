@@ -63,14 +63,15 @@ const getTour = (req, res) => {
   //  Convert string to number
   const id = req.params.id * 1;
 
+  // find the tour and return
+  const tour = tours.find((el) => el.id === id);
+
   // guard close
   // if id is greater than tours length then id is not existing since by default id is incremental
-  if (id > tours.length)
-    // if (!tour)
+  // if (id > tours.length)
+  if (!tour)
     return res.status(404).json({ status: 'fail', message: 'Invalid ID' });
 
-  // find the tour and return
-  const tour = tours.find((el) => el.id === req.params.id);
   res.status(200).json({
     status: 'success',
     results: tours.length,
