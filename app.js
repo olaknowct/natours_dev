@@ -1,5 +1,6 @@
 const fs = require('fs');
 const express = require('express');
+const e = require('express');
 
 const app = express();
 
@@ -18,6 +19,30 @@ const tours = JSON.parse(
 );
 
 app.get('/api/v1/tours', (req, res) => {
+  res.status(200).json({
+    status: 'success',
+    results: tours.length,
+    data: {
+      tours,
+    },
+  });
+});
+
+app.get('/api/v1/tours/:id', (req, res) => {
+  // All paramaters defined in the url can be retreive from req.params
+  // console.log(req.params);
+
+  //  Convert string to number
+  const id = req.params.id * 1;
+
+  // guard close
+  // if id is greater than tours length then id is not existing since by default id is incremental
+  // if (id > tours.length)
+  if (!tour)
+    return res.status(404).json({ status: 'fail', message: 'Invalid ID' });
+
+  // find the tour and return
+  const tour = tours.find((el) => el.id === req.params.id);
   res.status(200).json({
     status: 'success',
     results: tours.length,
