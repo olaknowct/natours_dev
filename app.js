@@ -13,7 +13,8 @@ app.use(morgan('dev'));
 // - the data from the body is added to to request object
 // - midle ware express injected the data body from the req.body object
 app.use(express.json());
-
+// Serving static files
+app.use(express.static(`${__dirname}/public`));
 // Creating our own middleware, without calling next then the req/res cycle will be stock at this point
 app.use((req, res, next) => {
   req.requestTime = new Date().toISOString();
