@@ -10,6 +10,12 @@ const app = express();
 // - midle ware express injected the data body from the req.body object
 app.use(express.json());
 
+// Creating our own middleware, without calling next then the req/res cycle will be stock at this point
+app.use((req, res, next) => {
+  req.requestTime = new Date().toISOString();
+  next();
+});
+
 const port = 3000;
 
 // Top level code = only executed once
@@ -19,6 +25,7 @@ const tours = JSON.parse(
 );
 
 const getAllTours = (req, res) => {
+  console.log(req.requestTime);
   res.status(200).json({
     status: 'success',
     results: tours.length,
