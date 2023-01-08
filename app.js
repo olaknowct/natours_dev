@@ -18,8 +18,6 @@ app.use((req, res, next) => {
   next();
 });
 
-const port = 3000;
-
 // Top level code = only executed once
 // what if the data gets updated does the server restarts?
 const tours = JSON.parse(
@@ -143,25 +141,21 @@ const deleteUser = (req, res) => {
 // app.get('/api/v1/tours', getAllTours);
 // app.post('/api/v1/tours', createTour);
 
-app.route('/api/v1/tours').get(getAllTours).post(createTour);
+// Middleware function
+const tourRouter = express.Router();
+const userRouter = express.Router();
+
+tourRouter.route('/').get(getAllTours).post(createTour);
 
 // app.get('/api/v1/tours/:id', getTour);
 // app.patch('/api/v1/tours/:id', updateTour);
 // app.delete('/api/v1/tours/:id', deleteTour);
 
-app
-  .route('/api/v1/tours/:id')
-  .get(getTour)
-  .patch(updateTour)
-  .delete(deleteTour);
+tourRouter.route('/:id').get(getTour).patch(updateTour).delete(deleteTour);
 
-app.route('/api/v1/users').get(getAllUsers).post(createUser);
+userRouter.route('/').get(getAllUsers).post(createUser);
 
-app
-  .route('/api/v1/users/:id')
-  .get(getUser)
-  .patch(updateUser)
-  .delete(deleteUser);
+userRouter.route('/:id').get(getUser).patch(updateUser).delete(deleteUser);
 
 app.get('/', (req, res) => {
   // res.status(200).send('Hello from the server side');
@@ -170,6 +164,10 @@ app.get('/', (req, res) => {
     .json({ message: 'Hello from the server side', app: 'Natours' });
 });
 
+app.use('/api/v1/tours', tourRouter);
+app.use('/api/v1/users', userRouter);
+
+const port = 3000;
 // Start Server
 app.listen(port, () => {
   console.log(`app running on port ${port}...`);
