@@ -9,7 +9,8 @@ const app = express();
 // Middlewares
 // Middleware - a function that can modify the incoming request data
 // - it stands between request and response
-app.use(morgan('dev'));
+console.log(process.env.NODE_ENV);
+if (process.env.NODE_ENV === 'development') app.use(morgan('dev'));
 // - the data from the body is added to to request object
 // - midle ware express injected the data body from the req.body object
 app.use(express.json());
