@@ -24,6 +24,26 @@ async function dbConnect() {
     console.log(error);
   }
 }
+
+// specifying + validation + describing the Schema
+const tourSchema = new mongoose.Schema({
+  name: {
+    type: String,
+    required: [true, 'A Tour must have a name'],
+    uniqe: true,
+  },
+  rating: {
+    type: Number,
+    default: 4.5,
+  },
+  price: {
+    type: Number,
+    required: [true, 'A tour must have a price'],
+  },
+});
+
+// Creating the model
+const Tour = mongoose.model('Tour ');
 // Express
 // console.log(app.get('env'));
 // console.log(process.env);
