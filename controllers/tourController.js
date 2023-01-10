@@ -38,10 +38,26 @@ exports.getAllTours = (req, res) => {
   });
 };
 
-exports.createTour = (req, res) => {
-  res.status(201).json({
-    status: 'Success',
-  });
+exports.createTour = async (req, res) => {
+  try {
+    // const newTour = new Tour({});
+    // newTour.save()
+
+    const newTour = await Tour.create(req.body);
+
+    res.status(201).json({
+      status: 'Success',
+      data: {
+        tour: newTour,
+      },
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(400).json({
+      status: 'failed',
+      message: 'Invalid Data sent',
+    });
+  }
 
   // const newTour = { id: newId, ...req.body };
   // tours = [...tours, newTour];
