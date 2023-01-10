@@ -18,6 +18,7 @@ dbConnect();
 
 async function dbConnect() {
   try {
+    await mongoose.set('strictQuery', true);
     const con = await mongoose.connect(DB);
     console.log('DB Connection Success');
     return con;
