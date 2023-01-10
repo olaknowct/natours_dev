@@ -27,15 +27,24 @@ const Tour = require('./../models/tourModel');
 // };
 
 // Route Handlers
-exports.getAllTours = (req, res) => {
-  console.log(req.requestTime);
-  res.status(200).json({
-    status: 'success',
-    // results: tours.length,
-    // data: {
-    //   tours,
-    // },
-  });
+exports.getAllTours = async (req, res) => {
+  try {
+    // console.log(req.requestTime);
+    const tours = await Tour.find();
+    console.log(tours);
+    res.status(200).json({
+      status: 'success',
+      results: tours.length,
+      data: {
+        tours,
+      },
+    });
+  } catch (error) {
+    res.status(404).json({
+      status: 'fail',
+      message: error.message,
+    });
+  }
 };
 
 exports.createTour = async (req, res) => {
@@ -82,29 +91,41 @@ exports.createTour = async (req, res) => {
   // );
 };
 
-exports.getTour = (req, res) => {
+exports.getTour = async (req, res) => {
+  try {
+    const tour = await Tour.findById(req.params.id);
+    // Tour.findOne({_id: req.params.id})
+    res.status(201).json({
+      status: 'Success',
+      data: {
+        tour,
+      },
+    });
+  } catch (error) {
+    res.status(400).json({
+      status: 'failed',
+      message: error.message,
+    });
+  }
+
   // All paramaters defined in the url can be retreive from req.params
   // console.log(req.params);
-
   //  Convert string to number
-  const id = req.params.id * 1;
-
+  // const id = req.params.id * 1;
   // find the tour and return
   // const tour = tours.find((el) => el.id === id);
-
   // guard close
   // if id is greater than tours length then id is not existing since by default id is incremental
   // if (id > tours.length)
   // if (!tour)
   // return res.status(404).json({ status: 'fail', message: 'Invalid ID' });
-
-  res.status(200).json({
-    status: 'success',
-    // results: tours.length,
-    // data: {
-    //   tours,
-    // },
-  });
+  // res.status(200).json({
+  // status: 'success',
+  // results: tours.length,
+  // data: {
+  //   tours,
+  // },
+  // });
 };
 
 exports.updateTour = (req, res) => {
