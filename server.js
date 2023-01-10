@@ -22,7 +22,7 @@ async function dbConnect() {
     console.log('DB Connection Success');
     return con;
   } catch (error) {
-    console.log('DB Connection Failed');
+    console.log(`DB Connection Failed : ${error}`);
   }
 }
 
