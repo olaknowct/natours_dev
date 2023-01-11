@@ -53,12 +53,22 @@ exports.getAllTours = async (req, res) => {
     let queryStr = JSON.stringify(queryObj);
     queryStr = queryStr.replace(/\b(gte|gt|lte|lt)\b/g, (match) => `$${match}`);
     // console.log(JSON.parse(queryStr));
-    // const query = Tour.find(JSON.parse(queryStr);
     // end advance filtering
+
+    let query = Tour.find(JSON.parse(queryStr));
+
+    // sorting - sample: http://localhost:3000/api/v1/tours?sort=price,ratingsAverage
+    if (req.query.sort) {
+      const sortBy = req.query.sort.split(', ').join('');
+      query = query.sort(sortBy);
+    } else {
+      query = query.sort('-createdAt');
+    }
+    // end sorting
 
     // we dont need to await since we are considering filter of data
     // by doing this, it will make us have an option to filter some neccessary data
-    const query = Tour.find(queryObj);
+    // const query = Tour.find(queryObj);
     const tours = await query;
 
     res.status(200).json({
