@@ -29,9 +29,29 @@ const Tour = require('./../models/tourModel');
 // Route Handlers
 exports.getAllTours = async (req, res) => {
   try {
+    // Build Query
+    // Execute Query
+    // Send Response
+
+    const queryObj = { ...req.query };
+    const excludedFields = ['page', 'sort', 'limit', 'fields'];
+    excludedFields.forEach((el) => delete queryObj[el]);
+    // console.log(req.query) // gets all query param. express parse it
     // console.log(req.requestTime);
-    const tours = await Tour.find();
-    console.log(tours);
+    // const tours = await Tour.find({ duration: 5, difficulty: 'easy' });
+
+    // special moongose methods - chaining
+    // const tours = await Tour.find()
+    //   .where('duration')
+    //   .equals(5)
+    //   .where('difficulty')
+    //   .equals('easy');
+
+    // we dont need to await since we are considering filter of data
+    // by doing this, it will make us have an option to filter some neccessary data
+    const query = Tour.find(queryObj);
+    const tours = await query;
+
     res.status(200).json({
       status: 'success',
       results: tours.length,
