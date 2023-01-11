@@ -66,6 +66,16 @@ exports.getAllTours = async (req, res) => {
     }
     // end sorting
 
+    // field limiting - sample: http://localhost:3000/api/v1/tours?fields=name,duration,difficulty,price
+    // select only data we want
+    if (req.query.fields) {
+      const fields = req.query.fields.split(',').join(' ');
+      query = query.select(fields);
+    } else {
+      query = query.select('-__v');
+    }
+    // end field limiting
+
     // we dont need to await since we are considering filter of data
     // by doing this, it will make us have an option to filter some neccessary data
     // const query = Tour.find(queryObj);
