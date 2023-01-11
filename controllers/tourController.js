@@ -76,10 +76,22 @@ exports.getAllTours = async (req, res) => {
     }
     // end field limiting
 
+    // pagination - sample: http://localhost:3000/api/v1/tours?page=2&limit=10
+    const page = req.query.page * 1 || 1; //convert to number, default 1
+    const limit = req.query.limit * 1 || 100;
+    const skip = (page - 1) * limit;
+
+    query = query.skip(skip).limit(limit);
+
+    if (req.query.page) {
+      const numTours = await Tour.countDocuments();
+      if (skip >= numTours) throw new Error('This page not exists');
+    }
+
     // we dont need to await since we are considering filter of data
     // by doing this, it will make us have an option to filter some neccessary data
     // const query = Tour.find(queryObj);
-    const tours = await query;
+    const tours = await query; // query.sort().skip().limit()
 
     res.status(200).json({
       status: 'success',
