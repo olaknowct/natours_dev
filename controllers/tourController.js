@@ -1,4 +1,5 @@
 // const fs = require('fs');
+const { json } = require('express');
 const Tour = require('./../models/tourModel');
 
 // Top level code = only executed once
@@ -46,6 +47,14 @@ exports.getAllTours = async (req, res) => {
     //   .equals(5)
     //   .where('difficulty')
     //   .equals('easy');
+
+    // advance filtering - sample : http://localhost:3000/api/v1/tours?difficulty=easy&duration[gte]=5&limit=test
+    // will simply replace gte with { difficulty: 'easy', duration: { '$gte': '5' } } which is acceptable
+    let queryStr = JSON.stringify(queryObj);
+    queryStr = queryStr.replace(/\b(gte|gt|lte|lt)\b/g, (match) => `$${match}`);
+    // console.log(JSON.parse(queryStr));
+    // const query = Tour.find(JSON.parse(queryStr);
+    // end advance filtering
 
     // we dont need to await since we are considering filter of data
     // by doing this, it will make us have an option to filter some neccessary data
