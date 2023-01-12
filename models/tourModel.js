@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const slugify = require('slugify');
 
 // specifying + validation + describing the Schema
 const tourSchema = new mongoose.Schema(
@@ -9,6 +10,7 @@ const tourSchema = new mongoose.Schema(
       unique: true,
       trim: true,
     },
+    slug: String,
     duration: {
       type: Number,
       required: [true, 'A tour must have a duration'],
@@ -70,6 +72,25 @@ const tourSchema = new mongoose.Schema(
 // best practice since MVC logic
 tourSchema.virtual('durationWeeks').get(function () {
   return this.duration / 7;
+});
+
+// Docs middleware - mongoose middleware -
+// This middleware will be called before an actual docs is saved on the database
+// Docs Middleware - Runs before .save() and .create(). not triggered on insert many method
+tourSchema.pre('save', function (next) {
+  this.slug = slugify(this.name, { lower: true });
+  next();
+});
+
+// tourSchema.pre('save', function (next) {
+//   console.log('will save comment  ');
+
+//   next();
+// });
+
+tourSchema.post('save', function (doc, next) {
+  console.log(doc);
+  next();
 });
 
 // Creating the model
