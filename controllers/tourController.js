@@ -227,3 +227,45 @@ exports.deleteTour = async (req, res) => {
     });
   }
 };
+
+exports.getTourStats = async (req, res) => {
+  try {
+    // aggregate pipeline (mongodb not mongoose)- we passed an array, array of stages
+    // match stage - a query to filter object/certain elements in mongodb
+    // Group stage - allows us to group together using accumulator(calculating average and etc)
+    // Sort stage - allows to sort it by new obj name
+    const stats = await Tour.aggregate([
+      { $match: { ratingsAverage: { $gte: 4.5 } } },
+      {
+        // api obj name : operations : db column name data
+        $group: {
+          _id: { $toUpper: '$difficulty' },
+          numTours: { $sum: 1 }, // we add 1 to each document
+          numRatings: { $avg: '$ratingsQuantity' },
+          avgRating: { $avg: '$ratingsAverage' },
+          avgPrice: { $avg: '$price' },
+          minPrice: { $min: '$price' },
+          maxPrice: { $max: '$price' },
+        },
+      },
+      {
+        $sort: { avgPrice: 1 },
+      },
+      // {
+      //   $match: { _id: { $ne: 'EASY'}}
+      // }
+    ]);
+
+    res.status(200).json({
+      status: 'success',
+      data: {
+        stats,
+      },
+    });
+  } catch (error) {
+    res.status(400).json({
+      status: 'failed',
+      message: error.message,
+    });
+  }
+};
