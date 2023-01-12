@@ -269,3 +269,64 @@ exports.getTourStats = async (req, res) => {
     });
   }
 };
+
+// calculate the busiest month of a given year: how many tours start in each of the month of the given year
+// Count how many tours on each month
+exports.getMontlyPlan = async (req, res) => {
+  try {
+    // unwind stage - deconstruct an array field from the info docs, then output one docs for each element of the array??
+    // project stage - hide property
+    //  add fields - add another property
+    const year = req.params.year * 1; //2021
+    const plan = await Tour.aggregate([
+      {
+        $unwind: '$startDates',
+      },
+      {
+        $match: {
+          startDates: {
+            $gte: new Date(`${year}-01-01`),
+            $lte: new Date(`${year}-12-31`),
+          },
+        },
+      },
+      {
+        $group: {
+          _id: { $month: '$startDates' },
+          numTourStarts: { $sum: 1 },
+          tours: { $push: '$name' },
+        },
+      },
+      {
+        $addFields: {
+          month: '$_id',
+        },
+      },
+      {
+        $project: {
+          _id: 0,
+        },
+      },
+      {
+        $sort: {
+          numTourStarts: -1,
+        },
+      },
+      {
+        $limit: 12,
+      },
+    ]);
+    res.status(200).json({
+      status: 'success',
+      results: plan.length,
+      data: {
+        plan,
+      },
+    });
+  } catch (error) {
+    res.status(400).json({
+      status: 'failed',
+      message: error.message,
+    });
+  }
+};
