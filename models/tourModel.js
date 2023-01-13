@@ -114,6 +114,12 @@ tourSchema.post(/^find/, function (docs, next) {
 //   this.find({ secretTour: { $ne: false } });
 //   next();
 // });
+
+tourSchema.pre('aggregate', function (next) {
+  // add another stage so we can exclude ne = true
+  this.pipeline().unshift({ $match: { secretTour: { $ne: true } } });
+  next();
+});
 // Creating the model
 const Tour = mongoose.model('Tour', tourSchema);
 

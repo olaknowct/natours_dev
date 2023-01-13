@@ -258,6 +258,7 @@ exports.getTourStats = async (req, res) => {
 
     res.status(200).json({
       status: 'success',
+      results: stats.length,
       data: {
         stats,
       },
