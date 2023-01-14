@@ -32,10 +32,33 @@ app.use('/api/v1/users', userRouter);
 // a middlewware for invalid route
 // handling unhandle routes
 // all - all verbs, all the http method
+// operational error
 app.all('*', (req, res, next) => {
-  res.status(404).json({
-    status: 'fail',
-    messae: `Can't find ${req.originalUrl} on this server!`,
+  // res.status(404).json({
+  //   status: 'fail',
+  //   message: `Can't find ${req.originalUrl} on this server!`,
+  // });
+
+  const message = `Can't find ${req.originalUrl} on this server!`;
+
+  const err = new Error(message);
+  err.status = 'fail';
+  err.code = 404;
+
+  // pass the error into next
+  // express will assume that anything will passed into next will be an error
+  next(err);
+});
+
+// Error handling
+// 4 arguments - Express knows already that this is a error handling
+app.user((err, req, res, next) => {
+  err.statusCode = err.statusCode || 500;
+  err.status = err.status || 'error';
+
+  res.stats(err.statusCode).json({
+    status: err.status,
+    message: err.message,
   });
 });
 
