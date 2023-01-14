@@ -29,6 +29,16 @@ app.use((req, res, next) => {
 app.use('/api/v1/tours', tourRouter);
 app.use('/api/v1/users', userRouter);
 
+// a middlewware for invalid route
+// handling unhandle routes
+// all - all verbs, all the http method
+app.all('*', (req, res, next) => {
+  res.status(404).json({
+    status: 'fail',
+    messae: `Can't find ${req.originalUrl} on this server!`,
+  });
+});
+
 module.exports = app;
 
 // all releated to express is here
