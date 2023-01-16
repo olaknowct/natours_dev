@@ -1,3 +1,10 @@
+const AppError = require('./../utils/appError');
+
+const handleCastErrorDB = (err) => {
+  const message = `Invalid ${err.path}: ${err.value}`;
+  // 400 bad request
+  return new AppError(message, 400);
+};
 const sendErrorDev = (err, res) => {
   res.status(err.statusCode).json({
     status: err.status,
@@ -12,7 +19,7 @@ const sendErrorProd = (err, res) => {
   // we can send t he right message to client since dev knows what is the error
   // dev already predit the error
   if (err.isOperational) {
-    return res.status(err.statusCode).json({
+    res.status(err.statusCode).json({
       status: err.status,
       message: err.message,
     });
@@ -20,7 +27,7 @@ const sendErrorProd = (err, res) => {
     // Since dev cant predit the error we send them a generic one.
     // log the error so dev can work it out
     // 1.Log error
-    console.erro(`ERROR :`, err);
+    console.error(`ERROR :`, err);
 
     // 2. Send Generic Message
     res.status(500).json({
@@ -34,17 +41,18 @@ module.exports = (err, req, res, next) => {
   // console.log(err.stack);
   err.statusCode = err.statusCode || 500;
   err.status = err.status || 'error';
-
   switch (process.env.NODE_ENV) {
     case 'development':
       sendErrorDev(err, res);
 
       break;
     case 'production':
-      sendErrorProd(err, res);
+      let error = { ...err };
+      // console.log(error);
+      if (err.name === 'CastError') error = handleCastErrorDB(error);
+      sendErrorProd(error, res);
       break;
 
     default:
-      break;
   }
 };
