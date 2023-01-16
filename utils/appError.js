@@ -6,6 +6,7 @@ class AppError extends Error {
     // 400 - fail, 500 - error
     this.status = `${statusCode}`.startsWith('4') ? 'fail' : 'error';
     // operational error - dev can predit, programming error - dev cant predit
+    // by default its true since all error reached here are predicted
     this.isOperational = true;
 
     // capturing where the error originated
