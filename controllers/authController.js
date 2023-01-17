@@ -1,6 +1,13 @@
 const jwt = require('jsonwebtoken');
+const AppError = require('../utils/appError');
 const User = require('./../models/userModel');
 const catchAsync = require('./../utils/catchAsync');
+
+const signToken = (id) => {
+  return jwt.sign({ id }, process.env.JWT_SECRET, {
+    expiresIn: process.env.JWT_EXPIRES_IN,
+  });
+};
 
 exports.signup = catchAsync(async (req, res, next) => {
   const { name, email, password, passwordConfirm } = req.body;
@@ -13,11 +20,8 @@ exports.signup = catchAsync(async (req, res, next) => {
     passwordConfirm,
   });
 
-  const jwtPayload = { id: newUser._id };
   // 1st paramter: payload - all object data you want to store
-  const token = jwt.sign(jwtPayload, process.env.JWT_SECRET, {
-    expiresIn: process.env.JWT_EXPIRES_IN,
-  });
+  const token = signToken(newUser._id);
 
   res.status(201).json({
     status: 'success',
@@ -25,5 +29,29 @@ exports.signup = catchAsync(async (req, res, next) => {
     data: {
       user: newUser,
     },
+  });
+});
+
+exports.login = catchAsync(async (req, res, next) => {
+  const { email, password } = req.body;
+
+  // 1. Check if email and password Exist
+  if (!email || !password) {
+    return next(new AppError('Please Provide Email and Password', 400));
+  }
+  // 2. Check if user exist && password is correct
+  // we explicitly selected the password
+  const user = await User.findOne({ email }).select('+password');
+
+  // if user exist we can run the second or
+  if (!user || !(await user.correctPassword(password, user.password))) {
+    return next(new AppError('Incorrect email or password', 401));
+  }
+  // 3. if everyging ok, send token to client
+  const token = signToken(user._id);
+
+  res.status(200).json({
+    status: 'success',
+    token,
   });
 });

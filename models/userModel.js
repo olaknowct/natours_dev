@@ -51,6 +51,16 @@ userSchema.pre('save', async function (next) {
   next();
 });
 
+// instance method - available on all documents of a certain collection
+userSchema.methods.correctPassword = async function (
+  candidatePassword,
+  userPassword
+) {
+  // this keyword points to the current object
+  // this.password is not available since we falsely selected
+  return await bcrypt.compare(candidatePassword, userPassword);
+};
+
 const User = mongoose.model('User', userSchema);
 
 module.exports = User;
