@@ -1,3 +1,4 @@
+const { promisify } = require('util');
 const jwt = require('jsonwebtoken');
 const AppError = require('../utils/appError');
 const User = require('./../models/userModel');
@@ -10,7 +11,8 @@ const signToken = (id) => {
 };
 
 exports.signup = catchAsync(async (req, res, next) => {
-  const { name, email, password, passwordConfirm } = req.body;
+  const { name, email, password, passwordConfirm, passwordChangedAt } =
+    req.body;
   // input only the data required. this help the code more secured.
   // ex. we are not allowin them to be an admin since its selected data only
   const newUser = await User.create({
@@ -18,6 +20,7 @@ exports.signup = catchAsync(async (req, res, next) => {
     email,
     password,
     passwordConfirm,
+    passwordChangedAt,
   });
 
   // 1st paramter: payload - all object data you want to store
@@ -54,4 +57,50 @@ exports.login = catchAsync(async (req, res, next) => {
     status: 'success',
     token,
   });
+});
+
+exports.protect = catchAsync(async (req, res, next) => {
+  let token;
+  // 1. Get Token and check if its there
+  if (
+    req.headers.authorization &&
+    req.headers.authorization.startsWith('Bearer')
+  ) {
+    token = req.headers.authorization.split(' ')[1];
+  }
+
+  if (!token) {
+    // 401 - unauthorize
+    return next(
+      new AppError('You are not logged in! Please Log in to get access', 401)
+    );
+  }
+
+  // 2. Validate/Verification Token
+  // jwt verify is synchrounous function
+  // The promisify() function will return a version Promise of your function
+  // verify if someone manipulated the data or also if token has already expired
+  const decoded = await promisify(jwt.verify)(token, process.env.JWT_SECRET);
+  // 3. Check if user still exists
+  // if user is deleted , dont authorize the previous token
+  const currentUser = await User.findById(decoded.id);
+  if (!currentUser) {
+    return next(
+      new AppError(
+        'The user belonging to this token does no longer exists',
+        401
+      )
+    );
+  }
+  // 4. Check if user changed password after the token was issued
+  // we dont authorize client if password is changed, token should be invalid if token retrieved before password is changed
+  if (currentUser.changedPasswordAfter(decoded.iat)) {
+    return next(
+      new AppError('User recently changed password! Please login again.', 401)
+    );
+  }
+
+  // Grant Access to protected Route if reached
+  req.user = currentUser;
+  next();
 });
