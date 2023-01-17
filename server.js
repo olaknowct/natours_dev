@@ -32,6 +32,21 @@ async function dbConnect() {
 // console.log(process.env);
 const port = process.env.PORT || 3000;
 // Start Server
-app.listen(port, () => {
+const server = app.listen(port, () => {
   console.log(`app running on port ${port}...`);
+});
+
+// listens to unhandledRejection
+// ex. db connection, wrong password db, an error outside of our express
+process.on('unhandledRejection', (err) => {
+  console.log(err.name, err.message);
+  console.log('Unhandled rejection. Shutting Down');
+  server.close(() => {
+    // 1- uncaught exception
+    // shut down our app , since it will not gona work
+    // abort all requrest that are currently still running
+    // close the server and shutdown the application, gracefully
+    // we have tools that listen to ccrashed and restart the server
+    process.exit(1);
+  });
 });
