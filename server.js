@@ -3,6 +3,15 @@ const mongoose = require('mongoose');
 
 const dotenv = require('dotenv');
 
+// should be @ the top - we listen before it has error
+// uncaught exceptions - errors/bugs that occur in our synchrounous code but are not handled anywhere
+process.on('unhandledRejection', (err) => {
+  console.log('Unhandled Exceptions. Shutting Down');
+  console.log(err.name, err.message);
+
+  process.exit(1);
+});
+
 // this one execute first before require app since from the app we are defining the env
 dotenv.config({ path: './config.env' });
 
@@ -38,6 +47,7 @@ const server = app.listen(port, () => {
 
 // listens to unhandledRejection
 // ex. db connection, wrong password db, an error outside of our express
+// async
 process.on('unhandledRejection', (err) => {
   console.log(err.name, err.message);
   console.log('Unhandled rejection. Shutting Down');
