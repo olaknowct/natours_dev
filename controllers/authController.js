@@ -11,13 +11,14 @@ const signToken = (id) => {
 };
 
 exports.signup = catchAsync(async (req, res, next) => {
-  const { name, email, password, passwordConfirm, passwordChangedAt } =
+  const { name, email, password, role, passwordConfirm, passwordChangedAt } =
     req.body;
   // input only the data required. this help the code more secured.
   // ex. we are not allowin them to be an admin since its selected data only
   const newUser = await User.create({
     name,
     email,
+    role,
     password,
     passwordConfirm,
     passwordChangedAt,
@@ -104,3 +105,19 @@ exports.protect = catchAsync(async (req, res, next) => {
   req.user = currentUser;
   next();
 });
+
+// closure, since from the routes we are calling and passing the arguments,
+// this function will return a middleware function
+exports.restrictTo = (...roles) => {
+  return (req, res, next) => {
+    // roles ['admin', 'lead-guide']
+    if (!roles.includes(req.user.role)) {
+      return next(
+        // 403 - forbidden
+        new AppError('You do not have permission to perform this action', 403)
+      );
+    }
+
+    next();
+  };
+};
