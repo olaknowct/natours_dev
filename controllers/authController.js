@@ -121,3 +121,18 @@ exports.restrictTo = (...roles) => {
     next();
   };
 };
+
+exports.forgotPassword = catchAsync(async (req, res, next) => {
+  // Get User based on posted email
+  const user = await User.findOne({ email: req.body.email });
+  if (!user)
+    return next(new AppError('There is no user with email address', 404));
+
+  // Gnerate random reset token
+  const resetToken = user.createPasswordResetToken();
+  // we are trying to save a doc but we did not specify all the mandatory data (required)
+  // use special option to neglect mandatory data
+  await user.save({ validateBeforeSave: false });
+  // sent it to users email
+});
+exports.resetPassword = (req, res, next) => {};
