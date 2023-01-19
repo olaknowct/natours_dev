@@ -60,7 +60,7 @@ userSchema.pre('save', async function (next) {
   next();
 });
 
-userSchema.pre('save', function () {
+userSchema.pre('save', function (next) {
   // is new doc is newly created docs
   if (!this.isModified('password') || this.isNew) return next();
 
