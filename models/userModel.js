@@ -42,6 +42,11 @@ const userSchema = new mongoose.Schema({
   passwordChangedAt: Date,
   passwordResetToken: String,
   passwordResetExpires: Date,
+  active: {
+    type: Boolean,
+    default: true,
+    select: false,
+  },
 });
 
 userSchema.pre('save', async function (next) {
@@ -57,6 +62,11 @@ userSchema.pre('save', async function (next) {
   // delete confirm password - so that it will not persisted on database
   // validator runs first before userschema pre
   this.passwordConfirm = undefined;
+  next();
+});
+
+userSchema.pre(/^find/, function (next) {
+  this.find({ active: { $ne: false } });
   next();
 });
 
