@@ -1,6 +1,7 @@
 const express = require('express');
 const morgan = require('morgan');
 const rateLimit = require('express-rate-limit');
+const helmet = require('helmet');
 
 const AppError = require('./utils/appError');
 const globalErrorHandler = require('./controllers/errorController');
@@ -10,12 +11,16 @@ const userRouter = require('./routes/userRoutes');
 const app = express();
 
 // Global Middlewares
+// Helmet - Security HTTP headers
+app.use(helmet());
+
 // Middlewares
 // Middleware - a function that can modify the incoming request data
 // - it stands between request and response
-console.log(process.env.NODE_ENV);
+// Morgan - Dev Logging
 if (process.env.NODE_ENV === 'development') app.use(morgan('dev'));
 
+// Express-rate-limit - Limit request from same API
 const limiter = rateLimit({
   max: 100,
   windowMs: 60 * 60 * 1000, // time window, 100 request from the sampe IP in one hour
@@ -24,11 +29,15 @@ const limiter = rateLimit({
 
 // apply the limitter only on specified routes (starts with)
 app.use('/api', limiter);
+
 // - the data from the body is added to to request object
 // - midle ware express injected the data body from the req.body object
-app.use(express.json());
+// Body Parser, reading data from body into req.body
+app.use(express.json({ limit: '10kb' }));
+
 // Serving static files
 app.use(express.static(`${__dirname}/public`));
+
 // Creating our own middleware, without calling next then the req/res cycle will be stock at this point
 app.use((req, res, next) => {
   req.requestTime = new Date().toISOString();
