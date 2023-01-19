@@ -1,5 +1,16 @@
 const User = require('../models/userModel');
+const AppError = require('../utils/appError');
 const catchAsync = require('../utils/catchAsync');
+
+const filterObj = (obj, ...allowedFields) => {
+  const newObj = {};
+  // Object.keys - returns an array containing key names
+  Object.keys(obj).forEach((el) => {
+    if (allowedFields.includes(el)) newObj[el] = obj[el];
+  });
+
+  return newObj;
+};
 
 exports.getAllUsers = catchAsync(async (req, res) => {
   const users = await User.find();
@@ -9,6 +20,34 @@ exports.getAllUsers = catchAsync(async (req, res) => {
     results: users.length,
     data: {
       users,
+    },
+  });
+});
+
+exports.updateMe = catchAsync(async (req, res, next) => {
+  // Create Error if user POSTs password Data
+  if (req.body.password || req.body.passwordConfirm) {
+    return next(
+      new AppError(
+        'This route is not for password update. Please use /updateMyPassword',
+        400
+      )
+    );
+  }
+  // filtered out unwanted fields names that are not allowed to be updated
+  const filteredBody = filterObj(req.body, 'name', 'email');
+  // Update user doc
+  // we only need to update a certain field so dont punt req,body on 2nd argument: filter the body
+  // .save iis not advisable to user since we dont like some other fields to be validated by our schema
+  const updatedUser = await User.findByIdAndUpdate(req.user.id, filteredBody, {
+    new: true,
+    runValidators: true,
+  });
+
+  res.status(200).json({
+    status: 'success',
+    data: {
+      user: updatedUser,
     },
   });
 });
