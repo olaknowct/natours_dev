@@ -4,6 +4,7 @@ const rateLimit = require('express-rate-limit');
 const helmet = require('helmet');
 const mongoSanitize = require('express-mongo-sanitize');
 const xss = require('xss-clean');
+const hpp = require('hpp');
 
 const AppError = require('./utils/appError');
 const globalErrorHandler = require('./controllers/errorController');
@@ -43,6 +44,22 @@ app.use(mongoSanitize());
 
 // data sanitization againts XSS, injection httml
 app.use(xss());
+
+// prevent paramter pollution
+// duplicate fields are prevented
+app.use(
+  hpp({
+    // allow to be duplicate since some of the case has 2 same fields
+    whitelist: [
+      'duration',
+      'ratingsQuantity',
+      'ratingsAverage',
+      'maxGroupSize',
+      'difficulty',
+      'price',
+    ],
+  })
+);
 
 // Serving static files
 app.use(express.static(`${__dirname}/public`));
