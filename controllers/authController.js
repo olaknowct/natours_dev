@@ -4,6 +4,7 @@ const AppError = require('../utils/appError');
 const sendEmail = require('../utils/email');
 const User = require('./../models/userModel');
 const catchAsync = require('./../utils/catchAsync');
+const crypto = require('crypto');
 
 const signToken = (id) => {
   return jwt.sign({ id }, process.env.JWT_SECRET, {
@@ -166,4 +167,40 @@ exports.forgotPassword = catchAsync(async (req, res, next) => {
     );
   }
 });
-exports.resetPassword = (req, res, next) => {};
+
+exports.resetPassword = catchAsync(async (req, res, next) => {
+  // get user based on the token
+  const hashedToken = crypto
+    .createHash('sha256')
+    .update(req.params.token)
+    .digest('hex');
+
+  const user = await User.findOne({
+    passwordResetToken: hashedToken,
+    passwordResetExpires: { $gt: Date.now() },
+  });
+
+  // if token has not expired, and there is user, set the new password
+  if (!user) {
+    // 400 - bad request
+    return next(new AppError('Token is invalid or has expired', 400));
+  }
+
+  user.password = req.body.password;
+  user.passwordConfirm = req.body.passwordConfirm;
+  user.passwordResetToken = undefined;
+  user.passwordResetExpires = undefined;
+
+  // we will not of the validator, we can off it by passing argument like before
+  await user.save();
+  // update changedpasswordat property for the user
+  // Log the user in, send JWT
+
+  // 1st paramter: payload - all object data you want to store
+  const token = signToken(user._id);
+
+  res.status(201).json({
+    status: 'success',
+    token,
+  });
+});
