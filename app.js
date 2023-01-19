@@ -1,5 +1,6 @@
 const express = require('express');
 const morgan = require('morgan');
+const rateLimit = require('express-rate-limit');
 
 const AppError = require('./utils/appError');
 const globalErrorHandler = require('./controllers/errorController');
@@ -8,11 +9,21 @@ const userRouter = require('./routes/userRoutes');
 
 const app = express();
 
+// Global Middlewares
 // Middlewares
 // Middleware - a function that can modify the incoming request data
 // - it stands between request and response
 console.log(process.env.NODE_ENV);
 if (process.env.NODE_ENV === 'development') app.use(morgan('dev'));
+
+const limiter = rateLimit({
+  max: 100,
+  windowMs: 60 * 60 * 1000, // time window, 100 request from the sampe IP in one hour
+  message: 'Too many request from this IP, please try again in an hour!',
+});
+
+// apply the limitter only on specified routes (starts with)
+app.use('/api', limiter);
 // - the data from the body is added to to request object
 // - midle ware express injected the data body from the req.body object
 app.use(express.json());
