@@ -11,6 +11,8 @@ const {
   login,
   forgotPassword,
   resetPassword,
+  updatePassword,
+  protect,
 } = require('./../controllers/authController');
 
 // Middleware function
@@ -21,6 +23,7 @@ router.post('/login', login);
 
 router.post('/forgotPassword', forgotPassword);
 router.patch('/resetPassword/:token', resetPassword);
+router.patch('/updateMyPassword', protect, updatePassword);
 
 router.route('/').get(getAllUsers).post(createUser);
 
