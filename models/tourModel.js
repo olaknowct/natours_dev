@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 const slugify = require('slugify');
 const validator = require('validator');
-const User = require('./userModel');
+// const User = require('./userModel');
 
 // specifying + validation + describing the Schema
 const tourSchema = new mongoose.Schema(
@@ -111,7 +111,13 @@ const tourSchema = new mongoose.Schema(
         day: Number,
       },
     ],
-    guides: Array,
+    guides: [
+      // we expect a type of each of the elements to be a mongo db ID
+      {
+        type: mongoose.Schema.ObjectId,
+        ref: 'User',
+      },
+    ],
   },
   {
     toJSON: { virtuals: true },
@@ -140,12 +146,12 @@ tourSchema.pre('save', function (next) {
 // Embedding User by ID into Tours schema
 // only works on creating new documents not for updating them
 // not practical to embed user since if alter on the properties of user gets updated we need to check and update the tour
-tourSchema.pre('save', async function (next) {
-  // Guides promises is array of promisess
-  const guidesPromises = this.guides.map(async (id) => await User.findById(id));
-  this.guides = await Promise.all(guidesPromises);
-  next();
-});
+// tourSchema.pre('save', async function (next) {
+// Guides promises is array of promisess
+// const guidesPromises = this.guides.map(async (id) => await User.findById(id));
+// this.guides = await Promise.all(guidesPromises);
+// next();
+// });
 
 // tourSchema.pre('save', function (next) {
 //   console.log('will save comment  ');
