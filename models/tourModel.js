@@ -81,6 +81,35 @@ const tourSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
+    startLocation: {
+      // start location is not for a schema option but rather an embededed object
+      // in this object we can specify a couple of properties
+      // In order this object to be identify as GeoJson we need types and coordinates
+      // each of the field of types/coordinates will get a schema option
+      // GeoJSON - a special data format where mongoDb uses
+      type: {
+        type: String,
+        default: 'Point',
+        enum: ['Point'],
+      },
+
+      coordinates: [Number],
+      address: String,
+      description: String,
+    },
+    locations: [
+      {
+        type: {
+          type: String,
+          defalut: 'Point',
+          enum: ['Point'],
+        },
+        coordinates: [Number],
+        addres: String,
+        description: String,
+        day: Number,
+      },
+    ],
   },
   {
     toJSON: { virtuals: true },
