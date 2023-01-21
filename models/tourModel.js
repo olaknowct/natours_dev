@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const slugify = require('slugify');
 const validator = require('validator');
+const User = require('./userModel');
 
 // specifying + validation + describing the Schema
 const tourSchema = new mongoose.Schema(
@@ -110,6 +111,7 @@ const tourSchema = new mongoose.Schema(
         day: Number,
       },
     ],
+    guides: Array,
   },
   {
     toJSON: { virtuals: true },
@@ -132,6 +134,16 @@ tourSchema.virtual('durationWeeks').get(function () {
 // Docs Middleware - Runs before .save() and .create(). not triggered on insert many method
 tourSchema.pre('save', function (next) {
   this.slug = slugify(this.name, { lower: true });
+  next();
+});
+
+// Embedding User by ID into Tours schema
+// only works on creating new documents not for updating them
+// not practical to embed user since if alter on the properties of user gets updated we need to check and update the tour
+tourSchema.pre('save', async function (next) {
+  // Guides promises is array of promisess
+  const guidesPromises = this.guides.map(async (id) => await User.findById(id));
+  this.guides = await Promise.all(guidesPromises);
   next();
 });
 
