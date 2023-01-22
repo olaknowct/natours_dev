@@ -135,6 +135,13 @@ tourSchema.virtual('durationWeeks').get(function () {
   return this.duration / 7;
 });
 
+// Virtual populate - accessing the review childs without using child referencing
+tourSchema.virtual('reviews', {
+  ref: 'Review',
+  foreignField: 'tour', // field name of the child ref
+  localField: '_id', //
+});
+
 // Docs middleware - mongoose middleware -
 // This middleware will be called before an actual docs is saved on the database
 // Docs Middleware - Runs before .save() and .create(). not triggered on insert many method

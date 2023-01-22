@@ -168,7 +168,7 @@ exports.createTour = catchAsync(async (req, res, next) => {
 exports.getTour = catchAsync(async (req, res, next) => {
   // Populate is used usually of schema has relations
   // Populate behind the scene use another queery and might affect your performance
-  const tour = await Tour.findById(req.params.id);
+  const tour = await Tour.findById(req.params.id).populate('reviews');
   // .populate({
   //   path: 'guides',
   //   select: '-__v -passwordChangedAt',
