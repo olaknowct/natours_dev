@@ -12,6 +12,7 @@ const {
   getMontlyPlan,
 } = require('./../controllers/tourController');
 const { protect, restrictTo } = require('./../controllers/authController');
+const { createReview } = require('./../controllers/reviewController');
 
 const router = express.Router();
 
@@ -28,5 +29,14 @@ router
   .get(getTour)
   .patch(updateTour)
   .delete(protect, restrictTo('admin', 'lead-guide'), deleteTour);
+
+// Nested Routes
+// POST /tour/12321412/reviews
+// GET /tour/12321412/reviews
+// GET /tour/12321412/reviews/FDSAF21321
+
+router
+  .route('/:tourId/reviews')
+  .post(protect, restrictTo('user'), createReview);
 
 module.exports = router;
