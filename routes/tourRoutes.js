@@ -12,11 +12,16 @@ const {
   getMontlyPlan,
 } = require('./../controllers/tourController');
 const { protect, restrictTo } = require('./../controllers/authController');
-const { createReview } = require('./../controllers/reviewController');
+// const { createReview } = require('./../controllers/reviewController');
+const reviewRouter = require('./../routes/reviewRoutes');
 
 const router = express.Router();
 
 // router.param('id', checkID);
+
+// mounting router -
+// tour router and review router are nicely separated and decoupled from one another
+router.use('/:tourId/reviews', reviewRouter);
 
 router.route('/top-5-cheap').get(aliasTopTours, getAllTours);
 
@@ -35,8 +40,8 @@ router
 // GET /tour/12321412/reviews
 // GET /tour/12321412/reviews/FDSAF21321
 
-router
-  .route('/:tourId/reviews')
-  .post(protect, restrictTo('user'), createReview);
+// router
+//   .route('/:tourId/reviews')
+//   .post(protect, restrictTo('user'), createReview);
 
 module.exports = router;
