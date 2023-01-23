@@ -7,6 +7,10 @@ const { protect, restrictTo } = require('./../controllers/authController');
 
 const router = express.Router({ mergeParams: true });
 
+// Nested Routes
+// POST /tour/12321412/reviews
+// GET /tour/12321412/reviews
+
 router
   .route('/')
   .get(getAllReviews)

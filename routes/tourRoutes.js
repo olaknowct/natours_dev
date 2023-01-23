@@ -35,9 +35,6 @@ router
   .patch(updateTour)
   .delete(protect, restrictTo('admin', 'lead-guide'), deleteTour);
 
-// Nested Routes
-// POST /tour/12321412/reviews
-// GET /tour/12321412/reviews
 // GET /tour/12321412/reviews/FDSAF21321
 
 // router
