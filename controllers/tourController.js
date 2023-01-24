@@ -123,48 +123,49 @@ exports.getAllTours = catchAsync(async (req, res, next) => {
 // the function should sit inside and wait until express calls it
 // express will call it as soon as the route hits the route
 // sol : return an anynomous function not call a function
-exports.createTour = catchAsync(async (req, res, next) => {
-  // const newTour = new Tour({});
-  // newTour.save()
+exports.createTour = factory.createOne(Tour);
+// exports.createTour = catchAsync(async (req, res, next) => {
+// const newTour = new Tour({});
+// newTour.save()
 
-  const newTour = await Tour.create(req.body);
+// const newTour = await Tour.create(req.body);
 
-  res.status(201).json({
-    status: 'Success',
-    data: {
-      tour: newTour,
-    },
-  });
-  // catch (error) {
-  //   console.log(error);
-  //   res.status(400).json({
-  //     status: 'failed',
-  //     message: 'Invalid Data sent',
-  //   });
-  // }
+// res.status(201).json({
+// status: 'Success',
+// data: {
+// tour: newTour,
+// },
+// });
+// catch (error) {
+//   console.log(error);
+//   res.status(400).json({
+//     status: 'failed',
+//     message: 'Invalid Data sent',
+//   });
+// }
 
-  // const newTour = { id: newId, ...req.body };
-  // tours = [...tours, newTour];
-  // Set new id
-  // const newId = tours[tours.length - 1].id + 1;
-  // Create new tour
-  // const newTour = Object.assign({ id: newId }, req.body);
-  // Update Tour variable
-  // tours.push(newTour);
-  // Persist new file
-  // fs.writeFile(
-  //   `${__dirname}/dev-data/data/tours-simple.json`,
-  //   JSON.stringify(tours),
-  //   (err) => {
-  //     res.status(201).json({
-  //       status: 'Success',
-  //       data: {
-  //         tour: newTour,
-  //       },
-  //     });
-  //   }
-  // );
-});
+// const newTour = { id: newId, ...req.body };
+// tours = [...tours, newTour];
+// Set new id
+// const newId = tours[tours.length - 1].id + 1;
+// Create new tour
+// const newTour = Object.assign({ id: newId }, req.body);
+// Update Tour variable
+// tours.push(newTour);
+// Persist new file
+// fs.writeFile(
+//   `${__dirname}/dev-data/data/tours-simple.json`,
+//   JSON.stringify(tours),
+//   (err) => {
+//     res.status(201).json({
+//       status: 'Success',
+//       data: {
+//         tour: newTour,
+//       },
+//     });
+//   }
+// );
+// });
 
 exports.getTour = catchAsync(async (req, res, next) => {
   // Populate is used usually of schema has relations
@@ -205,14 +206,7 @@ exports.getTour = catchAsync(async (req, res, next) => {
   // });
 });
 
-exports.updateTour = catchAsync(async (req, res, next) => {
-  const tour = await Tour.findByIdAndUpdate(req.params.id, req.body, {
-    new: true,
-    runValidators: true,
-  });
-  res.status(200).json({ status: 'succes', data: { tour } });
-});
-
+exports.updateTour = factory.updateOne(Tour);
 // this function will wait until it gets called, factory delete one will return a function
 exports.deleteTour = factory.deleteOne(Tour);
 
