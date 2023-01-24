@@ -1,7 +1,6 @@
 // const fs = require('fs');
 const AppError = require('../utils/appError');
 const Tour = require('./../models/tourModel');
-const APIFeatures = require('./../utils/apiFeatures');
 const catchAsync = require('./../utils/catchAsync');
 const factory = require('./handlerFactory');
 
@@ -38,83 +37,84 @@ exports.aliasTopTours = (req, res, next) => {
 // };
 
 // Route Handlers
-exports.getAllTours = catchAsync(async (req, res, next) => {
-  // Build Query
-  // Execute Query
-  // Send Response
+exports.getAllTours = factory.getAll(Tour);
+// exports.getAllTours = catchAsync(async (req, res, next) => {
+// Build Query
+// Execute Query
+// Send Response
 
-  // const queryObj = { ...req.query };
-  // const excludedFields = ['page', 'sort', 'limit', 'fields'];
-  // excludedFields.forEach((el) => delete queryObj[el]);
-  // console.log(req.query) // gets all query param. express parse it
-  // console.log(req.requestTime);
-  // const tours = await Tour.find({ duration: 5, difficulty: 'easy' });
+// const queryObj = { ...req.query };
+// const excludedFields = ['page', 'sort', 'limit', 'fields'];
+// excludedFields.forEach((el) => delete queryObj[el]);
+// console.log(req.query) // gets all query param. express parse it
+// console.log(req.requestTime);
+// const tours = await Tour.find({ duration: 5, difficulty: 'easy' });
 
-  // special moongose methods - chaining
-  // const tours = await Tour.find()
-  //   .where('duration')
-  //   .equals(5)
-  //   .where('difficulty')
-  //   .equals('easy');
+// special moongose methods - chaining
+// const tours = await Tour.find()
+//   .where('duration')
+//   .equals(5)
+//   .where('difficulty')
+//   .equals('easy');
 
-  // advance filtering - sample : http://localhost:3000/api/v1/tours?difficulty=easy&duration[gte]=5&limit=test
-  // will simply replace gte with { difficulty: 'easy', duration: { '$gte': '5' } } which is acceptable
-  // let queryStr = JSON.stringify(queryObj);
-  // queryStr = queryStr.replace(/\b(gte|gt|lte|lt)\b/g, (match) => `$${match}`);
-  // console.log(JSON.parse(queryStr));
-  // end advance filtering
+// advance filtering - sample : http://localhost:3000/api/v1/tours?difficulty=easy&duration[gte]=5&limit=test
+// will simply replace gte with { difficulty: 'easy', duration: { '$gte': '5' } } which is acceptable
+// let queryStr = JSON.stringify(queryObj);
+// queryStr = queryStr.replace(/\b(gte|gt|lte|lt)\b/g, (match) => `$${match}`);
+// console.log(JSON.parse(queryStr));
+// end advance filtering
 
-  // let query = Tour.find(JSON.parse(queryStr));
+// let query = Tour.find(JSON.parse(queryStr));
 
-  // sorting - sample: http://localhost:3000/api/v1/tours?sort=price,ratingsAverage
-  // if (req.query.sort) {
-  // const sortBy = req.query.sort.split(', ').join('');
-  // query = query.sort(sortBy);
-  // } else {
-  // query = query.sort('-createdAt');
-  // }
-  // end sorting
+// sorting - sample: http://localhost:3000/api/v1/tours?sort=price,ratingsAverage
+// if (req.query.sort) {
+// const sortBy = req.query.sort.split(', ').join('');
+// query = query.sort(sortBy);
+// } else {
+// query = query.sort('-createdAt');
+// }
+// end sorting
 
-  // field limiting - sample: http://localhost:3000/api/v1/tours?fields=name,duration,difficulty,price
-  // select only data we want
-  // if (req.query.fields) {
-  //   const fields = req.query.fields.split(',').join(' ');
-  //   query = query.select(fields);
-  // } else {
-  //   query = query.select('-__v');
-  // }
-  // end field limiting
+// field limiting - sample: http://localhost:3000/api/v1/tours?fields=name,duration,difficulty,price
+// select only data we want
+// if (req.query.fields) {
+//   const fields = req.query.fields.split(',').join(' ');
+//   query = query.select(fields);
+// } else {
+//   query = query.select('-__v');
+// }
+// end field limiting
 
-  // pagination - sample: http://localhost:3000/api/v1/tours?page=2&limit=10
-  // const page = req.query.page * 1 || 1; //convert to number, default 1
-  // const limit = req.query.limit * 1 || 100;
-  // const skip = (page - 1) * limit;
+// pagination - sample: http://localhost:3000/api/v1/tours?page=2&limit=10
+// const page = req.query.page * 1 || 1; //convert to number, default 1
+// const limit = req.query.limit * 1 || 100;
+// const skip = (page - 1) * limit;
 
-  // query = query.skip(skip).limit(limit);
+// query = query.skip(skip).limit(limit);
 
-  // if (req.query.page) {
-  //   const numTours = await Tour.countDocuments();
-  //   if (skip >= numTours) throw new Error('This page not exists');
-  // }
+// if (req.query.page) {
+//   const numTours = await Tour.countDocuments();
+//   if (skip >= numTours) throw new Error('This page not exists');
+// }
 
-  // we dont need to await since we are considering filter of data
-  // by doing this, it will make us have an option to filter some neccessary data
-  // const query = Tour.find(queryObj);
-  const features = new APIFeatures(Tour.find(), req.query)
-    .filter()
-    .sort()
-    .limitFields()
-    .paginate();
-  const tours = await features.query; // query.sort().skip().limit()
+// we dont need to await since we are considering filter of data
+// by doing this, it will make us have an option to filter some neccessary data
+// const query = Tour.find(queryObj);
+//   const features = new APIFeatures(Tour.find(), req.query)
+//     .filter()
+//     .sort()
+//     .limitFields()
+//     .paginate();
+//   const tours = await features.query; // query.sort().skip().limit()
 
-  res.status(200).json({
-    status: 'success',
-    results: tours.length,
-    data: {
-      tours,
-    },
-  });
-});
+//   res.status(200).json({
+//     status: 'success',
+//     results: tours.length,
+//     data: {
+//       tours,
+//     },
+//   });
+// });
 
 // --- catching  errorrs in asynch function----
 // --- in order to get rid of try catch ---
