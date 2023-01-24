@@ -77,6 +77,8 @@ exports.getAll = (Model) =>
       .sort()
       .limitFields()
       .paginate();
+    // explain - gives you details about query, how much data return, examined etc
+    // const doc = await features.query.explain(); // query.sort().skip().limit()
     const doc = await features.query; // query.sort().skip().limit()
 
     res.status(200).json({

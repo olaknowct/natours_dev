@@ -124,6 +124,9 @@ const tourSchema = new mongoose.Schema(
     toObject: { virtuals: true },
   }
 );
+// ascending order
+// tourSchema.index({ price: 1 });
+// tourSchema.index({ price: 1, ratingsAverage: -1 });
 
 // virtaul properties - a property that dont persist in the database but it is always available when we get it
 // this virtual will be created each time we get some data out of the database
