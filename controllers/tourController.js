@@ -167,44 +167,45 @@ exports.createTour = factory.createOne(Tour);
 // );
 // });
 
-exports.getTour = catchAsync(async (req, res, next) => {
-  // Populate is used usually of schema has relations
-  // Populate behind the scene use another queery and might affect your performance
-  const tour = await Tour.findById(req.params.id).populate('reviews');
-  // .populate({
-  //   path: 'guides',
-  //   select: '-__v -passwordChangedAt',
-  // });
-  if (!tour) {
-    return next(new AppError('No Tour Found with That ID', 404));
-  }
-  // Tour.findOne({_id: req.params.id})
-  res.status(200).json({
-    status: 'Success',
-    data: {
-      tour,
-    },
-  });
+exports.getTour = factory.getOne(Tour, { path: 'reviews' });
+// exports.getTour = catchAsync(async (req, res, next) => {
+// Populate is used usually of schema has relations
+// Populate behind the scene use another queery and might affect your performance
+// const tour = await Tour.findById(req.params.id).populate('reviews');
+// .populate({
+//   path: 'guides',
+//   select: '-__v -passwordChangedAt',
+// });
+// if (!tour) {
+// return next(new AppError('No Tour Found with That ID', 404));
+// }
+// Tour.findOne({_id: req.params.id})
+// res.status(200).json({
+// status: 'Success',
+// data: {
+// tour,
+// },
+// });
 
-  // All paramaters defined in the url can be retreive from req.params
-  // console.log(req.params);
-  //  Convert string to number
-  // const id = req.params.id * 1;
-  // find the tour and return
-  // const tour = tours.find((el) => el.id === id);
-  // guard close
-  // if id is greater than tours length then id is not existing since by default id is incremental
-  // if (id > tours.length)
-  // if (!tour)
-  // return res.status(404).json({ status: 'fail', message: 'Invalid ID' });
-  // res.status(200).json({
-  // status: 'success',
-  // results: tours.length,
-  // data: {
-  //   tours,
-  // },
-  // });
-});
+// All paramaters defined in the url can be retreive from req.params
+// console.log(req.params);
+//  Convert string to number
+// const id = req.params.id * 1;
+// find the tour and return
+// const tour = tours.find((el) => el.id === id);
+// guard close
+// if id is greater than tours length then id is not existing since by default id is incremental
+// if (id > tours.length)
+// if (!tour)
+// return res.status(404).json({ status: 'fail', message: 'Invalid ID' });
+// res.status(200).json({
+// status: 'success',
+// results: tours.length,
+// data: {
+//   tours,
+// },
+// });
+// });
 
 exports.updateTour = factory.updateOne(Tour);
 // this function will wait until it gets called, factory delete one will return a function

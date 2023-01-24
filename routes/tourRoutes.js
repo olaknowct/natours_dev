@@ -29,6 +29,7 @@ router.route('/tour-stats').get(getTourStats);
 router.route('/monthly-plan/:year').get(getMontlyPlan);
 
 router.route('/').get(protect, getAllTours).post(createTour);
+
 router
   .route('/:id')
   .get(getTour)
