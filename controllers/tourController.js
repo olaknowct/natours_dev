@@ -3,6 +3,7 @@ const AppError = require('../utils/appError');
 const Tour = require('./../models/tourModel');
 const APIFeatures = require('./../utils/apiFeatures');
 const catchAsync = require('./../utils/catchAsync');
+const factory = require('./handlerFactory');
 
 exports.aliasTopTours = (req, res, next) => {
   req.query.limit = '5';
@@ -212,13 +213,16 @@ exports.updateTour = catchAsync(async (req, res, next) => {
   res.status(200).json({ status: 'succes', data: { tour } });
 });
 
-exports.deleteTour = catchAsync(async (req, res, next) => {
-  const tour = await Tour.findByIdAndDelete(req.params.id);
-  if (!tour) {
-    return next(new AppError('No Tour Found with That ID', 404));
-  }
-  res.status(204).json({ status: 'succes', data: null });
-});
+// this function will wait until it gets called, factory delete one will return a function
+exports.deleteTour = factory.deleteOne(Tour);
+
+// exports.deleteTour = catchAsync(async (req, res, next) => {
+//   const tour = await Tour.findByIdAndDelete(req.params.id);
+//   if (!tour) {
+//     return next(new AppError('No Tour Found with That ID', 404));
+//   }
+//   res.status(204).json({ status: 'succes', data: null });
+// });
 
 exports.getTourStats = catchAsync(async (req, res, next) => {
   // aggregate pipeline (mongodb not mongoose)- we passed an array, array of stages
