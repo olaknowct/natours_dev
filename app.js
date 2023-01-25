@@ -1,3 +1,4 @@
+const path = require('path');
 const express = require('express');
 const morgan = require('morgan');
 const rateLimit = require('express-rate-limit');
@@ -13,6 +14,20 @@ const userRouter = require('./routes/userRoutes');
 const reviewRouter = require('./routes/reviewRoutes');
 
 const app = express();
+
+// Template Engine, express supports pugs, we dont need to install pug,
+// defining our view template engine as pug
+app.set('view engine', 'pug');
+
+// behind the scenes will create a path joining the directory name /views
+// path.join prevents bugs like below
+// we dont always know whether a path that we received from somewhere already has a slash or not
+//  we dont need to think about any slashes or not
+app.set('views', path.join(__dirname, 'views'));
+
+// Serving static files
+// app.use(express.static(`${__dirname}/public`));
+app.use(express.static(path.join(__dirname, 'public')));
 
 // Global Middlewares
 // Helmet - Security HTTP headers
@@ -62,9 +77,6 @@ app.use(
   })
 );
 
-// Serving static files
-app.use(express.static(`${__dirname}/public`));
-
 // Creating our own middleware, without calling next then the req/res cycle will be stock at this point
 app.use((req, res, next) => {
   req.requestTime = new Date().toISOString();
@@ -72,9 +84,15 @@ app.use((req, res, next) => {
 });
 
 // Routes
+// use for rendering pages
+app.get('/', (req, res) => {
+  res.status(200).render('base');
+});
+
 // app.get('/api/v1/tours', getAllTours);
 // app.post('/api/v1/tours', createTour);
 
+// API ROUTES
 app.use('/api/v1/tours', tourRouter);
 app.use('/api/v1/users', userRouter);
 app.use('/api/v1/reviews', reviewRouter);
