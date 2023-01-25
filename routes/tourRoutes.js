@@ -11,6 +11,7 @@ const {
   getTourStats,
   getMontlyPlan,
   getToursWithin,
+  getDistances,
 } = require('./../controllers/tourController');
 const { protect, restrictTo } = require('./../controllers/authController');
 // const { createReview } = require('./../controllers/reviewController');
@@ -36,6 +37,8 @@ router
   .get(getToursWithin);
 // /tours-distance?distance=223&center=-40,45&unit=mi - another options
 // /tours-distance/233/center/-40,45/unit/mi - lot cleaner
+
+router.route('/distances/:latlng/unit/:unit').get(getDistances);
 
 router
   .route('/')

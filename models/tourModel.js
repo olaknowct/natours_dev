@@ -128,8 +128,8 @@ const tourSchema = new mongoose.Schema(
 );
 // ascending order
 // tourSchema.index({ price: 1 });
-// tourSchema.index({ price: 1, ratingsAverage: -1 });
-// tourSchema.index({ slug:1 });
+tourSchema.index({ price: 1, ratingsAverage: -1 });
+tourSchema.index({ slug: 1 });
 tourSchema.index({ startLocation: '2dsphere' });
 
 // virtaul properties - a property that dont persist in the database but it is always available when we get it
@@ -205,11 +205,11 @@ tourSchema.post(/^find/, function (docs, next) {
 //   next();
 // });
 
-tourSchema.pre('aggregate', function (next) {
-  // add another stage so we can exclude ne = true
-  this.pipeline().unshift({ $match: { secretTour: { $ne: true } } });
-  next();
-});
+// tourSchema.pre('aggregate', function (next) {
+// add another stage so we can exclude ne = true
+// this.pipeline().unshift({ $match: { secretTour: { $ne: true } } });
+// next();
+// });
 // Creating the model
 const Tour = mongoose.model('Tour', tourSchema);
 
