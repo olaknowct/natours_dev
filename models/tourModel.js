@@ -139,10 +139,11 @@ tourSchema.virtual('durationWeeks').get(function () {
 });
 
 // Virtual populate - accessing the review childs without using child referencing
+// we need to populate for it to be used
 tourSchema.virtual('reviews', {
-  ref: 'Review',
-  foreignField: 'tour', // field name of the child ref
-  localField: '_id', //
+  ref: 'Review', // model we want to reference
+  foreignField: 'tour', // field name of the child ref, in the review model in this case, in order to connect the two data sets
+  localField: '_id', // where the id is currently stored
 });
 
 // Docs middleware - mongoose middleware -
