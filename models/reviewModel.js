@@ -49,6 +49,10 @@ reviewSchema.pre(/^find/, function (next) {
   next();
 });
 
+// each combination of tour and user has always to be unique
+// 2 reviews from same user is not allowed
+reviewSchema.index({ tour: 1, user: 1 }, { unique: true });
+
 // create a statistics of avg and number of rating of a certain tour
 // we create this a static method since we need to use/call aggregate function on the model
 reviewSchema.statics.calcAverageRatings = async function (tourId) {
