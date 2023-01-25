@@ -308,3 +308,38 @@ exports.getMontlyPlan = catchAsync(async (req, res, next) => {
     },
   });
 });
+
+// /tours-within?distance=223&center=-40,45&unit=mi - another options
+// /tours-within/233/center/14.474934, 121.014917/unit/mi - lot cleaner
+exports.getToursWithin = async (req, res, next) => {
+  const { distance, latlng, unit } = req.params;
+  const [lat, lng] = latlng.split(',');
+
+  // radius of the earth 3963.2
+  const radius = unit === 'mi' ? distance / 3963.2 : distance / 6378.1;
+
+  if (!lat || !lng) {
+    next(
+      new AppError(
+        'Please provide latitude and longitude in the format lat, lang'
+      ),
+      400
+    );
+  }
+  console.log(distance, lat, lng, unit);
+
+  // center sphere is the coordinates of your location
+  // radius - distance between your location and the nearest tour
+  // GeoWithin - selects geometries within a bounding geojson geomery
+  const tours = await Tour.find({
+    startLocation: { $geoWithin: { $centerSphere: [[lng, lat], radius] } },
+  });
+
+  res.status(200).json({
+    status: 'success',
+    results: tours.length,
+    data: {
+      data: tours,
+    },
+  });
+};
