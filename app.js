@@ -92,6 +92,17 @@ app.get('/', (req, res) => {
   });
 });
 
+app.get('/overview', (req, res) => {
+  res.status(200).render('overview', {
+    title: 'All Tours',
+  });
+});
+
+app.get('/tour', (req, res) => {
+  res.status(200).render('tour', {
+    title: 'The Fores Hiker',
+  });
+});
 // app.get('/api/v1/tours', getAllTours);
 // app.post('/api/v1/tours', createTour);
 
