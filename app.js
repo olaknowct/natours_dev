@@ -86,7 +86,10 @@ app.use((req, res, next) => {
 // Routes
 // use for rendering pages
 app.get('/', (req, res) => {
-  res.status(200).render('base');
+  res.status(200).render('base', {
+    tour: 'The forest hiker',
+    user: 'Christopher',
+  });
 });
 
 // app.get('/api/v1/tours', getAllTours);
