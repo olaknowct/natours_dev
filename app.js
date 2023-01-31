@@ -32,7 +32,32 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 // Global Middlewares
 // Helmet - Security HTTP headers
-app.use(helmet());
+// Further HELMET configuration for Security Policy (CSP)
+// app.use(helmet());
+const scriptSrcUrls = ['https://unpkg.com/', 'https://tile.openstreetmap.org'];
+const styleSrcUrls = [
+  'https://unpkg.com/',
+  'https://tile.openstreetmap.org',
+  'https://fonts.googleapis.com/',
+];
+const connectSrcUrls = ['https://unpkg.com', 'https://tile.openstreetmap.org'];
+const fontSrcUrls = ['fonts.googleapis.com', 'fonts.gstatic.com'];
+
+app.use(
+  helmet.contentSecurityPolicy({
+    crossOriginEmbedderPolicy: false,
+    directives: {
+      defaultSrc: [],
+      connectSrc: ["'self'", ...connectSrcUrls],
+      scriptSrc: ["'self'", ...scriptSrcUrls],
+      styleSrc: ["'self'", "'unsafe-inline'", ...styleSrcUrls],
+      workerSrc: ["'self'", 'blob:'],
+      objectSrc: [],
+      imgSrc: ["'self'", 'blob:', 'data:', 'https:'],
+      fontSrc: ["'self'", ...fontSrcUrls],
+    },
+  })
+);
 
 // Middlewares
 // Middleware - a function that can modify the incoming request data
