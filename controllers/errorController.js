@@ -25,36 +25,65 @@ const handleJWTError = () =>
 const handleJWTExpiredError = () =>
   new AppError('Your token has expired. Please login again', 401);
 
-const sendErrorDev = (err, res) => {
-  res.status(err.statusCode).json({
-    status: err.status,
-    error: err,
-    message: err.message,
-    stack: err.stack,
-  });
-};
-
-const sendErrorProd = (err, res) => {
-  // Operationl, trusted errors: send message to client
-  // we can send t he right message to client since dev knows what is the error
-  // dev already predit the error
-  if (err.isOperational) {
-    res.status(err.statusCode).json({
+const sendErrorDev = (err, req, res) => {
+  // API
+  if (req.originalUrl.startsWith('./api')) {
+    return res.status(err.statusCode).json({
       status: err.status,
+      error: err,
       message: err.message,
+      stack: err.stack,
     });
   } else {
+    // Render Error Page
+    return res.status(err.statusCode).render('error', {
+      title: 'Something went wrong',
+      msg: err.message,
+    });
+  }
+};
+
+const sendErrorProd = (err, req, res) => {
+  // API
+  if (req.originalUrl.startsWith('./api')) {
+    // Operationl, trusted errors: send message to client
+    // we can send t he right message to client since dev knows what is the error
+    // dev already predit the error
+    if (err.isOperational) {
+      return res.status(err.statusCode).json({
+        status: err.status,
+        message: err.message,
+      });
+    }
     // Since dev cant predit the error we send them a generic one.
     // log the error so dev can work it out
     // 1.Log error
     console.error(`ERROR :`, err);
 
     // 2. Send Generic Message
-    res.status(500).json({
+    return res.status(500).json({
       status: err.status,
       message: 'Something Went very wrong',
     });
   }
+
+  // Render Error Page
+  if (err.isOperational) {
+    return res.status(err.statusCode).render('error', {
+      title: 'Something went wrong',
+      msg: err.message,
+    });
+  }
+  // Since dev cant predit the error we send them a generic one.
+  // log the error so dev can work it out
+  // 1.Log error
+  console.error(`ERROR :`, err);
+
+  // 2. Send Generic Message
+  return res.status(err.statusCode).render('error', {
+    title: 'Something went wrong',
+    msg: 'Please Try again',
+  });
 };
 
 module.exports = (err, req, res, next) => {
@@ -63,12 +92,12 @@ module.exports = (err, req, res, next) => {
   err.status = err.status || 'error';
   switch (process.env.NODE_ENV) {
     case 'development':
-      sendErrorDev(err, res);
+      sendErrorDev(err, req, res);
 
       break;
     case 'production':
       let error = { ...err };
-
+      error.message = err.message;
       switch (err.name) {
         case 'TokenExpiredError':
           error = handleJWTExpiredError();
@@ -88,7 +117,7 @@ module.exports = (err, req, res, next) => {
 
       if (err.code === 11000) error = handleDuplicateFieldsDB(error);
 
-      sendErrorProd(error, res);
+      sendErrorProd(error, req, res);
       break;
 
     default:
