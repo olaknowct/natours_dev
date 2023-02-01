@@ -76,6 +76,14 @@ exports.login = catchAsync(async (req, res, next) => {
   createSendToken(user, 200, res);
 });
 
+exports.logout = (req, res) => {
+  res.cookie('jwt', 'loggedout', {
+    expires: new Date(Date.now() + 10 * 1000), // 10secs
+    httpOnly: true,
+  });
+  res.status(200).json({ status: 'success' });
+};
+
 exports.protect = catchAsync(async (req, res, next) => {
   let token;
   // 1. Get Token and check if its there
@@ -128,26 +136,30 @@ exports.protect = catchAsync(async (req, res, next) => {
 exports.isLoggedIn = catchAsync(async (req, res, next) => {
   // Rendered pages will always send the cookie not the authorization header
   if (req.cookies.jwt) {
-    // Vertify token
-    const decoded = await promisify(jwt.verify)(
-      req.cookies.jwt,
-      process.env.JWT_SECRET
-    );
-    // 3. Check if user still exists
-    const currentUser = await User.findById(decoded.id);
-    if (!currentUser) {
-      return next();
-    }
-    // 4. Check if user changed password after the token was issued
-    if (currentUser.changedPasswordAfter(decoded.iat)) {
-      return next();
-    }
+    try {
+      // Vertify token
+      const decoded = await promisify(jwt.verify)(
+        req.cookies.jwt,
+        process.env.JWT_SECRET
+      );
+      // 3. Check if user still exists
+      const currentUser = await User.findById(decoded.id);
+      if (!currentUser) {
+        return next();
+      }
+      // 4. Check if user changed password after the token was issued
+      if (currentUser.changedPasswordAfter(decoded.iat)) {
+        return next();
+      }
 
-    // There is a logged in user
-    // make our users accessible to the templates
-    // what ever we put here will be the variable inside of these templates, a little bit passing data into a tempalte
-    res.locals.user = currentUser;
-    return next();
+      // There is a logged in user
+      // make our users accessible to the templates
+      // what ever we put here will be the variable inside of these templates, a little bit passing data into a tempalte
+      res.locals.user = currentUser;
+      return next();
+    } catch (error) {
+      return next();
+    }
   }
   // no cookie therefore no user
   next();
