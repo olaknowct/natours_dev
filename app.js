@@ -6,6 +6,7 @@ const helmet = require('helmet');
 const mongoSanitize = require('express-mongo-sanitize');
 const xss = require('xss-clean');
 const hpp = require('hpp');
+const cookieParser = require('cookie-parser');
 
 const AppError = require('./utils/appError');
 const globalErrorHandler = require('./controllers/errorController');
@@ -34,7 +35,11 @@ app.use(express.static(path.join(__dirname, 'public')));
 // Helmet - Security HTTP headers
 // Further HELMET configuration for Security Policy (CSP)
 // app.use(helmet());
-const scriptSrcUrls = ['https://unpkg.com/', 'https://tile.openstreetmap.org'];
+const scriptSrcUrls = [
+  'https://unpkg.com/',
+  'https://tile.openstreetmap.org',
+  'https://cdnjs.cloudflare.com/ajax/libs/axios/1.3.0/axios.min.js',
+];
 const styleSrcUrls = [
   'https://unpkg.com/',
   'https://tile.openstreetmap.org',
@@ -79,6 +84,7 @@ app.use('/api', limiter);
 // - midle ware express injected the data body from the req.body object
 // Body Parser, reading data from body into req.body
 app.use(express.json({ limit: '10kb' }));
+app.use(cookieParser());
 
 // after reading, then clean
 // data sanitization againts nosql query injection
@@ -106,6 +112,7 @@ app.use(
 // Creating our own middleware, without calling next then the req/res cycle will be stock at this point
 app.use((req, res, next) => {
   req.requestTime = new Date().toISOString();
+  console.log(req.cookies);
   next();
 });
 
