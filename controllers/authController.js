@@ -124,6 +124,35 @@ exports.protect = catchAsync(async (req, res, next) => {
   next();
 });
 
+// this middleware is only for rendered pages, no errors!
+exports.isLoggedIn = catchAsync(async (req, res, next) => {
+  // Rendered pages will always send the cookie not the authorization header
+  if (req.cookies.jwt) {
+    // Vertify token
+    const decoded = await promisify(jwt.verify)(
+      req.cookies.jwt,
+      process.env.JWT_SECRET
+    );
+    // 3. Check if user still exists
+    const currentUser = await User.findById(decoded.id);
+    if (!currentUser) {
+      return next();
+    }
+    // 4. Check if user changed password after the token was issued
+    if (currentUser.changedPasswordAfter(decoded.iat)) {
+      return next();
+    }
+
+    // There is a logged in user
+    // make our users accessible to the templates
+    // what ever we put here will be the variable inside of these templates, a little bit passing data into a tempalte
+    res.locals.user = currentUser;
+    return next();
+  }
+  // no cookie therefore no user
+  next();
+});
+
 // closure, since from the routes we are calling and passing the arguments,
 // this function will return a middleware function
 exports.restrictTo = (...roles) => {
