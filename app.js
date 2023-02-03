@@ -84,6 +84,9 @@ app.use('/api', limiter);
 // - midle ware express injected the data body from the req.body object
 // Body Parser, reading data from body into req.body
 app.use(express.json({ limit: '10kb' }));
+// the way the forms sends data to the server is urlencoded
+// parse data the is comming from a urlencoded form: post data
+app.use(express.urlencoded({ extended: true, limit: '10kb' }));
 app.use(cookieParser());
 
 // after reading, then clean
@@ -112,7 +115,7 @@ app.use(
 // Creating our own middleware, without calling next then the req/res cycle will be stock at this point
 app.use((req, res, next) => {
   req.requestTime = new Date().toISOString();
-  console.log(req.cookies);
+  // console.log(req.cookies);
   next();
 });
 
