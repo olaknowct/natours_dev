@@ -1,7 +1,10 @@
+const multer = require('multer');
 const User = require('../models/userModel');
 const AppError = require('../utils/appError');
 const catchAsync = require('../utils/catchAsync');
 const factory = require('./handlerFactory');
+
+const upload = multer({ dest: 'public/img/users' });
 
 const filterObj = (obj, ...allowedFields) => {
   const newObj = {};
@@ -17,6 +20,8 @@ exports.getMe = (req, res, next) => {
   req.params.id = req.user.id;
   next();
 };
+
+exports.uploadUserPhoto = upload.single('photo');
 
 exports.getAllUsers = factory.getAll(User);
 // exports.getAllUsers = catchAsync(async (req, res) => {
