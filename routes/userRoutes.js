@@ -1,4 +1,5 @@
 const express = require('express');
+const multer = require('multer');
 const {
   getAllUsers,
   createUser,
@@ -20,6 +21,8 @@ const {
   logout,
 } = require('./../controllers/authController');
 
+const upload = multer({ dest: 'public/img/users' });
+
 // Middleware function
 const router = express.Router();
 
@@ -33,7 +36,7 @@ router.patch('/resetPassword/:token', resetPassword);
 router.use(protect);
 router.patch('/updateMyPassword', updatePassword);
 router.get('/me', getMe, getUser);
-router.patch('/updateMe', updateMe);
+router.patch('/updateMe', upload.single('photo'), updateMe);
 router.delete('/deleteMe', deleteMe);
 
 router.use(restrictTo('admin'));
