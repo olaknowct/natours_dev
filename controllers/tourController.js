@@ -30,10 +30,39 @@ exports.uploadTourImages = upload.fields([
 // upload.single();  //single upload req.file
 
 // process images
-exports.resizeTourImages = (req, res, next) => {
+exports.resizeTourImages = catchAsync(async (req, res, next) => {
   console.log(req.files);
+
+  if (!req.files.imageCover || !req.files.images) return next();
+
+  // Cover Image
+  req.body.imageCover = `tour-${req.params.id}-${Date.now()}-cover.jpeg`;
+
+  await sharp(req.files.imageCover[0].buffer)
+    .resize(2000, 1333)
+    .toFormat('jpeg')
+    .jpeg({ quality: 90 })
+    .toFile(`public/img/tours/${req.body.imageCover}`); // 90 perecent
+
+  // Images
+  req.body.images = [];
+  // we need to wait the asyn function inside before going into next other wise req.body images will be empty and file name will not be saved
+  // promise all will wait for all promises from the map method
+  await Promise.all(
+    // we use map so that we can await all the promises of the function inside
+    req.files.images.map(async (file, i) => {
+      const filename = `tour-${req.params.id}-${Date.now()}-${++i}.jpeg`;
+      await sharp(file.buffer)
+        .resize(2000, 1333)
+        .toFormat('jpeg')
+        .jpeg({ quality: 90 })
+        .toFile(`public/img/tours/${filename}`); // 90 perecent
+      req.body.images.push(filename);
+    })
+  );
+
   next();
-};
+});
 
 exports.aliasTopTours = (req, res, next) => {
   req.query.limit = '5';
