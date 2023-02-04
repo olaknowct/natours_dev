@@ -49,7 +49,7 @@ exports.getMe = (req, res, next) => {
 exports.uploadUserPhoto = upload.single('photo');
 
 // runs right after the photo uploaded
-exports.resizeUserPhoto = (req, res, next) => {
+exports.resizeUserPhoto = catchAsync(async (req, res, next) => {
   if (!req.file) return next();
 
   // save file name since we need it when updateMe endpoint, file name is not saved when using memoryStorage from multer
@@ -58,14 +58,14 @@ exports.resizeUserPhoto = (req, res, next) => {
   // --- Image processing ---
   // buffer is availabe here since we use multerstorage
   // get file from the memory -> resize the dimension -> format the extn -> define the quality -> save it to disk
-  sharp(req.file.buffer)
+  await sharp(req.file.buffer)
     .resize(500, 500)
     .toFormat('jpeg')
     .jpeg({ quality: 90 })
     .toFile(`public/img/users/${req.file.filename}`); // 90 perecent
 
   next();
-};
+});
 
 exports.getAllUsers = factory.getAll(User);
 // exports.getAllUsers = catchAsync(async (req, res) => {
