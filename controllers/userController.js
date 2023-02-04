@@ -1,20 +1,24 @@
 const multer = require('multer');
+const sharp = require('sharp');
 const User = require('../models/userModel');
 const AppError = require('../utils/appError');
 const catchAsync = require('../utils/catchAsync');
 const factory = require('./handlerFactory');
 
 // store it to file system
-const multerStorage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, 'public/img/users');
-  },
-  filename: (req, file, cb) => {
-    // user-id-timestap.jpg
-    const ext = file.mimetype.split('/')[1];
-    cb(null, `user-${req.user.id}-${Date.now()}.${ext}`);
-  },
-});
+// const multerStorage = multer.diskStorage({
+//   destination: (req, file, cb) => {
+//     cb(null, 'public/img/users');
+//   },
+//   filename: (req, file, cb) => {
+//     // user-id-timestap.jpg
+//     const ext = file.mimetype.split('/')[1];
+//     cb(null, `user-${req.user.id}-${Date.now()}.${ext}`);
+//   },
+// });
+
+// save it to memory and will be stored as a buffer
+const multerStorage = multer.memoryStorage();
 
 // to test if the uploaded file is an image
 const multerFilter = (req, file, cb) => {
@@ -43,6 +47,25 @@ exports.getMe = (req, res, next) => {
 };
 
 exports.uploadUserPhoto = upload.single('photo');
+
+// runs right after the photo uploaded
+exports.resizeUserPhoto = (req, res, next) => {
+  if (!req.file) return next();
+
+  // save file name since we need it when updateMe endpoint, file name is not saved when using memoryStorage from multer
+  req.file.filename = `user-${req.user.id}-${Date.now()}.jpeg`;
+
+  // --- Image processing ---
+  // buffer is availabe here since we use multerstorage
+  // get file from the memory -> resize the dimension -> format the extn -> define the quality -> save it to disk
+  sharp(req.file.buffer)
+    .resize(500, 500)
+    .toFormat('jpeg')
+    .jpeg({ quality: 90 })
+    .toFile(`public/img/users/${req.file.filename}`); // 90 perecent
+
+  next();
+};
 
 exports.getAllUsers = factory.getAll(User);
 // exports.getAllUsers = catchAsync(async (req, res) => {
