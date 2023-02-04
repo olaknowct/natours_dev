@@ -1,8 +1,39 @@
 // const fs = require('fs');
+const multer = require('multer');
+const sharp = require('sharp');
 const AppError = require('../utils/appError');
 const Tour = require('./../models/tourModel');
 const catchAsync = require('./../utils/catchAsync');
 const factory = require('./handlerFactory');
+
+// save it to memory and will be stored as a buffer
+const multerStorage = multer.memoryStorage();
+
+// to test if the uploaded file is an image
+const multerFilter = (req, file, cb) => {
+  // mime type can detect what type of file, csv,
+  if (file.mimetype.startsWith('image')) {
+    cb(null, true);
+  } else {
+    cb(new AppError('Not an image! Please Upload only images.', 400), false);
+  }
+};
+const upload = multer({ storage: multerStorage, fileFilter: multerFilter });
+
+// Mixed multi/single upload
+exports.uploadTourImages = upload.fields([
+  { name: 'imageCover', maxCount: 1 },
+  { name: 'images', maxCount: 3 },
+]);
+
+// upload.array();  // multiple upload req.files
+// upload.single();  //single upload req.file
+
+// process images
+exports.resizeTourImages = (req, res, next) => {
+  console.log(req.files);
+  next();
+};
 
 exports.aliasTopTours = (req, res, next) => {
   req.query.limit = '5';

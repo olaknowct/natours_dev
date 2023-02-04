@@ -12,6 +12,8 @@ const {
   getMontlyPlan,
   getToursWithin,
   getDistances,
+  uploadTourImages,
+  resizeTourImages,
 } = require('./../controllers/tourController');
 const { protect, restrictTo } = require('./../controllers/authController');
 // const { createReview } = require('./../controllers/reviewController');
@@ -48,7 +50,13 @@ router
 router
   .route('/:id')
   .get(getTour)
-  .patch(protect, restrictTo('admin', 'lead-guide'), updateTour)
+  .patch(
+    protect,
+    restrictTo('admin', 'lead-guide'),
+    uploadTourImages,
+    resizeTourImages,
+    updateTour
+  )
   .delete(protect, restrictTo('admin', 'lead-guide'), deleteTour);
 
 // GET /tour/12321412/reviews/FDSAF21321
