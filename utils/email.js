@@ -1,6 +1,6 @@
 const nodemailer = require('nodemailer');
 const pug = require('pug');
-const htmlToText = require('html-to-text');
+const { htmlToText } = require('html-to-text');
 
 // new Email(user, url).sendWelcome() // url can be a reset link
 module.exports = class Email {
@@ -37,16 +37,17 @@ module.exports = class Email {
 
   async send(template, subject) {
     // Render HTML based on the pug template
-    const html = pug.renderFile(
-      `${__dirname}/../views/emails/${template}.pug`,
-      { firstName: this.firstName, url: this.url, subject }
-    );
+    const html = pug.renderFile(`${__dirname}/../views/email/${template}.pug`, {
+      firstName: this.firstName,
+      url: this.url,
+      subject,
+    });
     // Define email options
     const mailOptions = {
       from: this.from,
       to: this.to,
       subject,
-      text: htmlToText.fromString(html),
+      text: htmlToText(html),
       html,
     };
 
