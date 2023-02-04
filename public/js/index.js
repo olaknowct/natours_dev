@@ -1,7 +1,7 @@
 import '@babel/polyfill';
 import { displayMap } from '/leaflet.js';
 import { login, logout } from './login';
-import { updateSettings } from './updateSettings';
+import { updateSettings, handleDisplayUserPhoto } from './updateSettings';
 
 // DOM ELEMENTS
 const hasMap = document.getElementById('map');
@@ -9,6 +9,9 @@ const loginForm = document.querySelector('.form--login');
 const logOutBtn = document.querySelector('.nav__el--logout');
 const userDataform = document.querySelector('.form-user-data');
 const userPasswordForm = document.querySelector('.form-user-password');
+const userImgEl = document.querySelector('.form__user-photo');
+const userNavImage = document.querySelector('.nav__user-img');
+const userImgInputEl = document.querySelector('#photo');
 
 // Delegate
 if (hasMap) {
@@ -29,9 +32,13 @@ if (logOutBtn) logOutBtn.addEventListener('click', logout);
 if (userDataform)
   userDataform.addEventListener('submit', (e) => {
     e.preventDefault();
-    const name = document.getElementById('name').value;
-    const email = document.getElementById('email').value;
-    updateSettings({ name, email }, 'data');
+    // recreating multipart form data
+    const form = new FormData();
+    form.append('name', document.getElementById('name').value);
+    form.append('email', document.getElementById('email').value);
+    form.append('photo', document.getElementById('photo').files[0]);
+    console.log(form);
+    updateSettings(form, 'data');
   });
 
 if (userPasswordForm)
@@ -54,3 +61,6 @@ if (userPasswordForm)
     document.getElementById('password').value = '';
     document.getElementById('password-confirm').value = '';
   });
+
+if (userImgInputEl)
+  userImgInputEl.addEventListener('change', handleDisplayUserPhoto);

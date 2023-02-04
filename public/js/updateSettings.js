@@ -20,3 +20,21 @@ export const updateSettings = async (data, type) => {
     showAlert('error', error.response.data.message);
   }
 };
+
+export const handleDisplayUserPhoto = (e) => {
+  // Get File
+  const imgFile = e.target.files?.[0];
+
+  // Check file if image
+  if (!imgFile?.type.startsWith('image/')) return;
+  const reader = new FileReader();
+
+  // Read File
+  reader.readAsDataURL(imgFile);
+
+  // Changed once done reading
+  reader.addEventListener('load', () => {
+    userImgEl.setAttribute('src', reader.result);
+    // userNavImage.setAttribute('src', reader.result);
+  });
+};
