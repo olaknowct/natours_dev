@@ -2,6 +2,7 @@ import '@babel/polyfill';
 import { displayMap } from '/leaflet.js';
 import { login, logout } from './login';
 import { updateSettings, handleDisplayUserPhoto } from './updateSettings';
+import { bookTour } from './stripe';
 
 // DOM ELEMENTS
 const hasMap = document.getElementById('map');
@@ -12,6 +13,7 @@ const userPasswordForm = document.querySelector('.form-user-password');
 const userImgEl = document.querySelector('.form__user-photo');
 const userNavImage = document.querySelector('.nav__user-img');
 const userImgInputEl = document.querySelector('#photo');
+const bookBtn = document.getElementById('book-tour');
 
 // Delegate
 if (hasMap) {
@@ -64,3 +66,10 @@ if (userPasswordForm)
 
 if (userImgInputEl)
   userImgInputEl.addEventListener('change', handleDisplayUserPhoto);
+
+if (bookBtn)
+  bookBtn.addEventListener('click', (e) => {
+    e.target.textContent = 'Processing...';
+    const { tourId } = e.target.dataset;
+    bookTour(tourId);
+  });

@@ -37,6 +37,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 // Further HELMET configuration for Security Policy (CSP)
 // app.use(helmet());
 const scriptSrcUrls = [
+  'https://js.stripe.com/v3/',
   // 'https://unpkg.com/',
   // 'https://tile.openstreetmap.org',
   // 'https://cdnjs.cloudflare.com/ajax/libs/axios/1.3.0/axios.min.js',
@@ -48,6 +49,7 @@ const styleSrcUrls = [
 ];
 const connectSrcUrls = ['https://unpkg.com', 'https://tile.openstreetmap.org'];
 const fontSrcUrls = ['fonts.googleapis.com', 'fonts.gstatic.com'];
+const frameSrcUrls = ['https://js.stripe.com/v3/'];
 
 app.use(
   helmet.contentSecurityPolicy({
@@ -61,6 +63,7 @@ app.use(
       objectSrc: [],
       imgSrc: ["'self'", 'blob:', 'data:', 'https:'],
       fontSrc: ["'self'", ...fontSrcUrls],
+      frameSrc: ["'self'", ...frameSrcUrls],
     },
   })
 );
