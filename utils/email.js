@@ -8,7 +8,10 @@ module.exports = class Email {
     this.to = user.email;
     this.firstName = user.name.split(' ')[0];
     this.url = url;
-    this.from = `Christopher Olano <${process.env.EMAIL_FROM}>`;
+    this.from =
+      process.env.NODE_ENV === 'production'
+        ? `Christopher Olano <${process.env.SENDGRID_EMAIL_FROM}>`
+        : `Christopher Olano <${process.env.EMAIL_FROM}>`;
   }
 
   // Create a transporter - a service that actually send the email
@@ -16,7 +19,20 @@ module.exports = class Email {
 
   newTransport() {
     if (process.env.NODE_ENV === 'production') {
-      return 1;
+      return nodemailer.createTransport({
+        // Gmail is not at all good idea for a production app but we can use
+        // gmail can only send 500 emails per day:jonas
+        // once exceeded it will be marked as a spam
+        // service: 'Gmail',
+        service: 'SendGrid',
+        // no need to define host/port since nodemailer already knows it
+        auth: {
+          user: process.env.SENDGRID_USERNAME,
+          pass: process.env.SENDGRID_PASSWORD,
+        },
+        // Activate in Gmail "less secure app"
+        // fakes to send emails to real addresses : mailtraps
+      });
     }
 
     return nodemailer.createTransport({
