@@ -45,7 +45,7 @@ const sendErrorDev = (err, req, res) => {
 
 const sendErrorProd = (err, req, res) => {
   // API
-  if (req.originalUrl.startsWith('./api')) {
+  if (req.originalUrl.startsWith('/api')) {
     // Operationl, trusted errors: send message to client
     // we can send t he right message to client since dev knows what is the error
     // dev already predit the error
