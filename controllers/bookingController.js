@@ -49,6 +49,18 @@ exports.createBookingCheckout = catchAsync(async (req, res, next) => {
   res.redirect(req.originalUrl.split('?')[0]);
 });
 
+exports.checkIfBooked = catchAsync(async (req, res, next) => {
+  // To check if booked was bought by user who wants to review it
+  const booking = await Booking.find({
+    user: req.user.id,
+    tour: req.body.tour,
+  });
+
+  if (booking.length === 0)
+    return next(new AppError('You must buy this tour to review it', 401));
+  next();
+});
+
 exports.createBooking = factory.createOne(Booking);
 exports.getBooking = factory.getOne(Booking);
 exports.getAllBookings = factory.getAll(Booking);
