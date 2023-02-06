@@ -31,8 +31,6 @@ exports.uploadTourImages = upload.fields([
 
 // process images
 exports.resizeTourImages = catchAsync(async (req, res, next) => {
-  console.log(req.files);
-
   if (!req.files.imageCover || !req.files.images) return next();
 
   // Cover Image
@@ -386,7 +384,7 @@ exports.getToursWithin = catchAsync(async (req, res, next) => {
       400
     );
   }
-  console.log(distance, lat, lng, unit);
+  // console.log(distance, lat, lng, unit);
 
   // center sphere is the coordinates of your location
   // radius - distance between your location and the nearest tour

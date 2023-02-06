@@ -175,7 +175,7 @@ tourSchema.pre('save', function (next) {
 // });
 
 tourSchema.post('save', function (doc, next) {
-  console.log(doc);
+  // console.log(doc);
   next();
 });
 
