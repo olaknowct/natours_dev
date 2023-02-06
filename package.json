@@ -9,7 +9,7 @@
     "debug": "ndb server.js",
     "watch:dev": "npm-run-all --parallel watch:js start:dev",
     "watch:js": "parcel watch --no-hmr ./public/js/index.js --out-dir ./public/js --out-file bundle.js",
-    "build:js": "parcel watch --no-hmr ./public/js/index.js --out-dir ./public/js --out-file bundle.js"
+    "build:js": "parcel build --no-hmr ./public/js/index.js --out-dir ./public/js --out-file bundle.js"
   },
   "author": "Christopher Olano",
   "license": "ISC",
