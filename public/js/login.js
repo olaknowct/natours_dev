@@ -2,11 +2,11 @@ import axios from 'axios';
 import { showAlert } from './alerts';
 
 export const login = async (email, password) => {
-  // console.log(email, password);
+  const url = '/api/v1/users/login';
   try {
     const res = await axios({
       method: 'POST',
-      url: '/api/v1/users/login', // this works because fe and be sits and hosting on the same place
+      url, // this works because fe and be sits and hosting on the same place
       data: {
         email,
         password,
