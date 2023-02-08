@@ -16,6 +16,8 @@ const tourRouter = require('./routes/tourRoutes');
 const userRouter = require('./routes/userRoutes');
 const reviewRouter = require('./routes/reviewRoutes');
 const bookingRouter = require('./routes/bookingRoutes');
+const { webhookCheckout } = require('./controllers/bookingController');
+
 const viewRouter = require('./routes/viewRoutes');
 
 const app = express();
@@ -89,6 +91,12 @@ const limiter = rateLimit({
 
 // apply the limitter only on specified routes (starts with)
 app.use('/api', limiter);
+
+app.post(
+  '/webhook-checkout',
+  express.raw({ type: 'application/json' }),
+  webhookCheckout
+); // we need a raw string not a json, so we get the body before body parser below
 
 // - the data from the body is added to to request object
 // - midle ware express injected the data body from the req.body object

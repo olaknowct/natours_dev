@@ -8,11 +8,11 @@ const {
   getMyTours,
 } = require('../controllers/viewsController');
 const { isLoggedIn, protect } = require('../controllers/authController');
-const { createBookingCheckout } = require('../controllers/bookingController');
+// const { createBookingCheckout } = require('../controllers/bookingController');
 
 const router = express.Router();
 
-router.get('/', createBookingCheckout, isLoggedIn, getOverview);
+router.get('/', isLoggedIn, getOverview);
 
 router.get('/tour', isLoggedIn, getTour);
 router.get('/tour/:slug', isLoggedIn, getTour);
