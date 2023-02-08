@@ -3,6 +3,7 @@ import { displayMap } from '/leaflet.js';
 import { login, logout } from './login';
 import { updateSettings, handleDisplayUserPhoto } from './updateSettings';
 import { bookTour } from './stripe';
+import { showAlert } from './alerts';
 
 // DOM ELEMENTS
 const hasMap = document.getElementById('map');
@@ -14,6 +15,7 @@ const userImgEl = document.querySelector('.form__user-photo');
 const userNavImage = document.querySelector('.nav__user-img');
 const userImgInputEl = document.querySelector('#photo');
 const bookBtn = document.getElementById('book-tour');
+const alertMessage = document.querySelector('body').dataset.alert;
 
 // Delegate
 if (hasMap) {
@@ -73,3 +75,5 @@ if (bookBtn)
     const { tourId } = e.target.dataset;
     bookTour(tourId);
   });
+
+if (alertMessage) showAlert('success', alertMessage, 20);

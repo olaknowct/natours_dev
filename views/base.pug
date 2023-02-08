@@ -12,7 +12,7 @@ html
       link(rel="stylesheet", href="https://fonts.googleapis.com/css?family=Lato:300,300i,700")
       //- script(src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js" integrity="sha256-WBkoXOwTeyKclOHuWtc+i2uENFpDZ9YPdf5Hf+D7ewM=" crossorigin="")
       title Natours | #{title}
-  body 
+  body(data-alert=`${alert ? alert : ''}`)
     // HEADER
     include _header
 
