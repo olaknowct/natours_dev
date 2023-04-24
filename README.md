@@ -1,6 +1,7 @@
 # Natour
-link : https://christours.onrender.com/
+link : https://christours.onrender.com/ 
 
+test credentials : ayls@example.com | test1234
 
 ### Feature Developed
 - RESTful API
